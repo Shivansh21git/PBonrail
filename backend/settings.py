@@ -147,5 +147,5 @@ MQTT_TOPIC = os.getenv('MQTT_PUB_TOPIC')
 MQTT_PORT  = os.getenv('BROKER_PORT')
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://ar.bhoomitra.space",  "https://dev.bhoomitra.space", "http://plant-buddy-production-c04f.up.railway.app","https://plant-buddy-production-c04f.up.railway.app"
+    "https://ar.bhoomitra.space",  "https://dev.bhoomitra.space", "http://ar.bhoomitra.space","https://ar.bhoomitra.space"
 ]

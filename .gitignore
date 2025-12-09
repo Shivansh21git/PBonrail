@@ -19,3 +19,5 @@ db.sqlite3
 
 # InfluxDB configs or tokens
 .env
+backup.sql
+db_backup_utf8.sql
