@@ -280,12 +280,14 @@ function fetchLatest() {
       }
     });
 }
-
 function fetchHistory() {
   fetch("{% url 'device_history_json' device_id %}")
     .then(res => res.json())
     .then(data => {
+
       const history = data.history;
+
+      // Reset arrays
       dataStore.timestamps = [];
       dataStore.nitrogen = [];
       dataStore.phosphorus = [];
@@ -293,6 +295,7 @@ function fetchHistory() {
       dataStore.temperature = [];
       dataStore.humidity = [];
 
+      // Load all historical points for NPK + T/H values
       history.forEach(entry => {
         dataStore.timestamps.push(entry.timestamp);
         dataStore.nitrogen.push(entry.nitrogen);
@@ -302,12 +305,32 @@ function fetchHistory() {
         dataStore.humidity.push(entry.humidity);
       });
 
-      // Update text values using last entry
+      // Last reading
       const last = history[history.length - 1];
-      updateData(last, false); // update charts without pushing new timestamps
 
-      for (let key in charts) charts[key].update();
-    });
+      // Update NPK values (text)
+      document.getElementById("n_value").textContent = last.nitrogen;
+      document.getElementById("p_value").textContent = last.phosphorus;
+      document.getElementById("k_value").textContent = last.potassium;
+
+      // --- Update Charts ---
+      for (let key in charts) {
+        const chart = charts[key];
+
+        if (chart.config.type === "line") {
+          // For line charts (NPK) → full history is shown
+          chart.data.labels = dataStore.timestamps;
+          chart.data.datasets[0].data = dataStore[key];
+        } else {
+          // For doughnut charts (Temp + Humidity) → only last reading
+          const value = last[key];
+          chart.data.datasets[0].data = [value, 100 - value];
+        }
+
+        chart.update();
+      }
+    })
+    .catch(err => console.error("History load error:", err));
 }
 
 function updateData(newData, pushTime = true) {
