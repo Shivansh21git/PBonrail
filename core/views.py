@@ -115,3 +115,45 @@ def get_device_data(request, device_id):
     data = DeviceData.objects.filter(device=device).order_by("-timestamp")
     serializer = DeviceDataSerializer(data, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+#-------------------------------------------------------------New data vies-----------------------------------------------------------------------
+
+@login_required
+def device_latest_json(request, device_id):
+    device = get_object_or_404(Device, device_id=device_id, user=request.user)
+    latest = DeviceData.objects.filter(device=device).order_by("-timestamp").first()
+
+    if not latest:
+        return JsonResponse({"error": "No data found"}, status=404)
+
+    return JsonResponse({
+        "nitrogen": latest.nitrogen,
+        "phosphorus": latest.phosphorus,
+        "potassium": latest.potassium,
+        "temperature": latest.temperature,
+        "humidity": latest.humidity,
+        "timestamp": latest.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+    })
+
+@login_required
+def device_history_json(request, device_id):
+    device = get_object_or_404(Device, device_id=device_id, user=request.user)
+    data = (
+        DeviceData.objects.filter(device=device)
+        .order_by("-timestamp")[:10]
+    )
+
+    response = [
+        {
+            "nitrogen": d.nitrogen,
+            "phosphorus": d.phosphorus,
+            "potassium": d.potassium,
+            "temperature": d.temperature,
+            "humidity": d.humidity,
+            "timestamp": d.timestamp.strftime("%H:%M:%S"),
+        }
+        for d in reversed(data) # show oldest → latest
+    ]
+
+    return JsonResponse({"history": response})

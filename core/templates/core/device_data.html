@@ -4,6 +4,7 @@
 
 {% block content %}
 <h3>Live Sensor Data for {{ device_id }}</h3>
+<button id="liveToggle" class="btn-primary">LIVE: OFF</button>
 
 <div class="chart-grid">
 
@@ -68,6 +69,21 @@
     color: #2e7d32;
     font-size: 18px;
   }
+</style>
+
+<style>
+#liveToggle {
+  background: #007bff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+#liveToggle.live {
+  background: #28a745;
+}
 </style>
 
 
@@ -252,19 +268,105 @@ function updateData(newData) {
   }
 }
 
-function fetchDeviceData() {
-  fetch("{% url 'device_data_json' device_id %}")
-    .then(response => response.json())
+let liveMode = false;
+let liveInterval = null;
+
+function fetchLatest() {
+  fetch("{% url 'device_latest_json' device_id %}")
+    .then(res => res.json())
     .then(data => {
-      if (data.nitrogen !== undefined) updateData(data);
-    })
-    .catch(error => console.error("Error fetching data:", error));
+      if (data.nitrogen !== undefined) {
+        updateData(data);
+      }
+    });
 }
 
+function fetchHistory() {
+  fetch("{% url 'device_history_json' device_id %}")
+    .then(res => res.json())
+    .then(data => {
+      const history = data.history;
+      dataStore.timestamps = [];
+      dataStore.nitrogen = [];
+      dataStore.phosphorus = [];
+      dataStore.potassium = [];
+      dataStore.temperature = [];
+      dataStore.humidity = [];
+
+      history.forEach(entry => {
+        dataStore.timestamps.push(entry.timestamp);
+        dataStore.nitrogen.push(entry.nitrogen);
+        dataStore.phosphorus.push(entry.phosphorus);
+        dataStore.potassium.push(entry.potassium);
+        dataStore.temperature.push(entry.temperature);
+        dataStore.humidity.push(entry.humidity);
+      });
+
+      // Update text values using last entry
+      const last = history[history.length - 1];
+      updateData(last, false); // update charts without pushing new timestamps
+
+      for (let key in charts) charts[key].update();
+    });
+}
+
+function updateData(newData, pushTime = true) {
+  const now = new Date().toLocaleTimeString();
+
+  if (pushTime) {
+    if (dataStore.timestamps.length > 10) {
+      for (let key in dataStore) dataStore[key].shift();
+    }
+    dataStore.timestamps.push(now);
+    dataStore.nitrogen.push(newData.nitrogen);
+    dataStore.phosphorus.push(newData.phosphorus);
+    dataStore.potassium.push(newData.potassium);
+    dataStore.temperature.push(newData.temperature);
+    dataStore.humidity.push(newData.humidity);
+  }
+
+  document.getElementById("n_value").textContent = newData.nitrogen;
+  document.getElementById("p_value").textContent = newData.phosphorus;
+  document.getElementById("k_value").textContent = newData.potassium;
+
+  for (let key in charts) {
+    let chart = charts[key];
+
+    if (chart.config.type === "line") {
+      chart.update();
+    } else {
+      let value = newData[key];
+      chart.data.datasets[0].data = [value, 100 - value];
+      chart.update();
+    }
+  }
+}
+
+document.getElementById("liveToggle").addEventListener("click", () => {
+  liveMode = !liveMode;
+
+  const btn = document.getElementById("liveToggle");
+  btn.textContent = liveMode ? "LIVE: ON" : "LIVE: OFF";
+  btn.classList.toggle("live", liveMode);
+
+  if (liveMode) {
+    // start live mode
+    liveInterval = setInterval(fetchLatest, 10000);
+    fetchLatest();  // fetch immediately
+  } else {
+    // stop live mode
+    clearInterval(liveInterval);
+    fetchHistory();
+  }
+});
+
+
 initCharts();
-setInterval(fetchDeviceData, 10000);
+fetchHistory();
+
 </script>
 
 <br>
 <a href="{% url 'dashboard' %}" class="btn-primary">Back to Dashboard</a>
+
 {% endblock %}
