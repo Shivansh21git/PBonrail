@@ -1,0 +1,36 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <title>SignUp</title> 
+      <link rel="stylesheet" href="{% static 'core/style.css' %}">     
+</head>
+
+<body>
+    {% include 'core/header.html' %}
+
+    <div class="form-container">
+  <h2>Create Your Account</h2>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-primary">Register</button>
+  </form>
+
+  <p class="form-note">Already have an account? <a href="{% url 'login' %}">Login here</a>.</p>
+</div>
+{% include 'core/footer.html' %}
+</body>
+</html>

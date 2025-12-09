@@ -1,0 +1,53 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Bhoomitra{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'core/style.css' %}">
+
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+<meta name="theme-color" content="#2196f3">
+
+</head>
+<body>
+  {% include 'core/header.html' %}
+
+ <main class="main-content">
+  {% block content %}
+  <!-- Optional: Default homepage content -->
+  <section class="hero">
+    <div class="container">
+      <h1>Welcome to <span class="brand">Bhoomitra</span></h1>
+      <p>Your smart companion for monitoring soil health and nutrition.</p>
+      {% if not user.is_authenticated %}
+        <a href="{% url 'login' %}" class="btn-primary">Get Started</a>
+      {% else %}
+        <a href="{% url 'dashboard' %}" class="btn-primary">Go to Dashboard</a>
+      {% endif %}
+    </div>
+  </section> 
+  {% endblock %}
+</main>
+
+
+  {% include 'core/footer.html' %}
+
+
+{% comment %} {% block extra_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
+{% endblock %} {% endcomment %}
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register("{% static 'service-worker.js' %}")
+    .then(() => console.log("Service Worker registered"));
+}
+</script>
+
+</body>
+</html>
