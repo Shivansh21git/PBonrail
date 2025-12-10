@@ -3,7 +3,8 @@
 {% block title %}Device Data{% endblock %}
 
 {% block content %}
-<h3>Live Sensor Data for {{ device_id }}</h3>
+<h3>Sensor Data for {{ device_id }}</h3>
+
 <button id="liveToggle" class="btn-primary">LIVE: OFF</button>
 
 <div class="chart-grid">
@@ -34,10 +35,11 @@
 
   <!-- Temperature -->
   <div class="chart-container"><canvas id="TChart"></canvas></div>
+
   <!-- Humidity -->
   <div class="chart-container"><canvas id="HChart"></canvas></div>
-</div>
 
+</div>
 
 <style>
   .chart-grid {
@@ -55,8 +57,7 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     padding: 10px;
   }
-</style>
-<style>
+
   .npk-values {
     text-align: center;
     font-size: 16px;
@@ -69,56 +70,54 @@
     color: #2e7d32;
     font-size: 18px;
   }
-</style>
 
-<style>
-#liveToggle {
-  background: #007bff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
-  color: #fff;
-  cursor: pointer;
-  margin-bottom: 15px;
-}
-#liveToggle.live {
-  background: #28a745;
-}
+  #liveToggle {
+    background: #007bff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    margin-bottom: 15px;
+  }
+  #liveToggle.live {
+    background: #28a745;
+  }
 </style>
-
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 
-  // Custom plugin to draw value text inside doughnut charts
+// ---------------------------
+// Doughnut Center Text Plugin
+// ---------------------------
 const centerTextPlugin = {
   id: 'centerText',
   afterDraw(chart) {
     if (chart.config.type !== 'doughnut') return;
 
     const { ctx, chartArea: { width, height } } = chart;
-    const dataset = chart.data.datasets[0];
-    const value = dataset.data[0];
-    const label = chart.config.options.plugins.title.text;
+    const value = chart.data.datasets[0].data[0];
 
     ctx.save();
     ctx.font = 'bold 18px sans-serif';
     ctx.fillStyle = '#2e7d32';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-
-    // Draw the value (you can customize font size and Y-offset)
     ctx.fillText(`${value}`, width / 2, height / 1.3);
-
     ctx.restore();
   }
 };
 
-// Register plugin globally
 Chart.register(centerTextPlugin);
 
+// ---------------------------
+// Chart Data Store
+// ---------------------------
 let charts = {};
+let liveMode = false;
+
 const dataStore = {
   timestamps: [],
   nitrogen: [],
@@ -128,8 +127,13 @@ const dataStore = {
   humidity: []
 };
 
+// ---------------------------
+// Chart Initialization
+// ---------------------------
 function chartType(key) {
-  return ['nitrogen', 'phosphorus', 'potassium'].includes(key) ? 'line' : 'doughnut';
+  return ['nitrogen', 'phosphorus', 'potassium'].includes(key)
+    ? 'line'
+    : 'doughnut';
 }
 
 function getColor(key) {
@@ -155,7 +159,7 @@ function getUColor(key) {
 }
 
 function initCharts() {
-  const ctxMap = {
+  const chartMap = {
     nChart: 'nitrogen',
     pChart: 'phosphorus',
     kChart: 'potassium',
@@ -163,13 +167,12 @@ function initCharts() {
     HChart: 'humidity'
   };
 
-  for (const [id, key] of Object.entries(ctxMap)) {
-    const ctx = document.getElementById(id).getContext('2d');
-    const type = chartType(key);
+  for (const [canvasId, key] of Object.entries(chartMap)) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
 
-    if (type === 'line') {
+    if (chartType(key) === 'line') {
       charts[key] = new Chart(ctx, {
-        type,
+        type: 'line',
         data: {
           labels: dataStore.timestamps,
           datasets: [{
@@ -185,55 +188,96 @@ function initCharts() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          scales: {
-            x: { title: { display: true, text: 'Time' } },
-            y: { title: { display: true, text: key.toUpperCase() } }
+        }
+      });
+
+    } else {
+      charts[key] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: [key, ''],
+          datasets: [{
+            data: [0, 100],
+            backgroundColor: [getColor(key), '#eee'],
+            borderWidth: 0,
+            cutout: '70%'
+          }]
+        },
+        options: {
+          responsive: true,
+          rotation: -90,
+          circumference: 180,
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: key.toUpperCase() },
+            centerText: {}
           }
         }
       });
-    } 
-else if (type === 'doughnut') {
-  charts[key] = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: [key, 'blank'],
-      datasets: [{
-        label: key,
-        data: [0, 100], // [current value, remaining]
-        backgroundColor: [getColor(key), '#eee'],
-        borderWidth: 0,
-        cutout: '70%'
-      }]
-    },
-    options: {
-      responsive: true,
-      rotation: -90,
-      circumference: 180, // half circle
-      plugins: {
-        legend: { display: false },
-        title: { display: true, text: key.toUpperCase() },
-        tooltip: {
-          filter: (item) => item.dataIndex === 0, // only first slice
-          callbacks: {
-            label: (context) => {
-              const val = context.parsed;
-              if (key === 'temperature') return `Temp: ${val} °C`;
-              if (key === 'humidity') return `Humidity: ${val} %`;
-              return `${key}: ${val}`;
-            }
-          }
-        },
-        centerText: { } // enables center-text plugin
-      },
-      interaction: { mode: 'nearest', intersect: true },
-      hover: { mode: 'nearest', intersect: true }
     }
-  });
-}
   }
 }
 
-function updateData(newData) {
+// ---------------------------
+// History Mode (LOAD 10 ENTRIES)
+// ---------------------------
+function loadHistory() {
+  fetch("{% url 'device_history_json' device_id %}")
+    .then(res => res.json())
+    .then(data => {
+      const history = data.history;
+
+      // Reset arrays
+      for (let key in dataStore) dataStore[key] = [];
+
+      // Load history data
+      history.forEach(entry => {
+        dataStore.timestamps.push(entry.timestamp);
+        dataStore.nitrogen.push(entry.nitrogen);
+        dataStore.phosphorus.push(entry.phosphorus);
+        dataStore.potassium.push(entry.potassium);
+        dataStore.temperature.push(entry.temperature);
+        dataStore.humidity.push(entry.humidity);
+      });
+
+      const last = history[history.length - 1];
+
+      // Update Text
+      document.getElementById("n_value").textContent = last.nitrogen;
+      document.getElementById("p_value").textContent = last.phosphorus;
+      document.getElementById("k_value").textContent = last.potassium;
+
+      // Update charts
+      for (let key in charts) {
+        if (charts[key].config.type === "line") {
+          charts[key].data.labels = dataStore.timestamps;
+          charts[key].data.datasets[0].data = dataStore[key];
+        } else {
+          charts[key].data.datasets[0].data = [
+            last[key],
+            100 - last[key]
+          ];
+        }
+        charts[key].update();
+      }
+    });
+}
+
+// ---------------------------
+// LIVE WebSocket Mode
+// ---------------------------
+const socket = new WebSocket(
+  "wss://" + window.location.host + "/ws/device/{{ device_id }}/"
+);
+
+socket.onmessage = (e) => {
+  if (!liveMode) return;
+
+  const data = JSON.parse(e.data);
+  updateLiveData(data);
+};
+
+function updateLiveData(newData) {
   const now = new Date().toLocaleTimeString();
 
   if (dataStore.timestamps.length > 10) {
@@ -246,146 +290,39 @@ function updateData(newData) {
   dataStore.potassium.push(newData.potassium);
   dataStore.temperature.push(newData.temperature);
   dataStore.humidity.push(newData.humidity);
-  // Update numerical display
-  document.getElementById("n_value").textContent = newData.nitrogen.toFixed(1);
-  document.getElementById("p_value").textContent = newData.phosphorus.toFixed(1);
-  document.getElementById("k_value").textContent = newData.potassium.toFixed(1);
-
-
-  // Update charts
-  for (let key in charts) {
-    const chart = charts[key];
-
-    if (chart.config.type === 'line') {
-      chart.update();
-    } else if (chart.config.type === 'doughnut') {
-      // Update half gauge
-      let value = newData[key];
-      if (key === 'humidity') value = Math.min(value, 100); // limit
-      chart.data.datasets[0].data = [value, 100 - value];
-      chart.update();
-    }
-  }
-}
-
-let liveMode = false;
-let liveInterval = null;
-
-function fetchLatest() {
-  fetch("{% url 'device_latest_json' device_id %}")
-    .then(res => res.json())
-    .then(data => {
-      if (data.nitrogen !== undefined) {
-        updateData(data);
-      }
-    });
-}
-function fetchHistory() {
-  fetch("{% url 'device_history_json' device_id %}")
-    .then(res => res.json())
-    .then(data => {
-
-      const history = data.history;
-
-      // Reset arrays
-      dataStore.timestamps = [];
-      dataStore.nitrogen = [];
-      dataStore.phosphorus = [];
-      dataStore.potassium = [];
-      dataStore.temperature = [];
-      dataStore.humidity = [];
-
-      // Load all historical points for NPK + T/H values
-      history.forEach(entry => {
-        dataStore.timestamps.push(entry.timestamp);
-        dataStore.nitrogen.push(entry.nitrogen);
-        dataStore.phosphorus.push(entry.phosphorus);
-        dataStore.potassium.push(entry.potassium);
-        dataStore.temperature.push(entry.temperature);
-        dataStore.humidity.push(entry.humidity);
-      });
-
-      // Last reading
-      const last = history[history.length - 1];
-
-      // Update NPK values (text)
-      document.getElementById("n_value").textContent = last.nitrogen;
-      document.getElementById("p_value").textContent = last.phosphorus;
-      document.getElementById("k_value").textContent = last.potassium;
-
-      // --- Update Charts ---
-      for (let key in charts) {
-        const chart = charts[key];
-
-        if (chart.config.type === "line") {
-          // For line charts (NPK) → full history is shown
-          chart.data.labels = dataStore.timestamps;
-          chart.data.datasets[0].data = dataStore[key];
-        } else {
-          // For doughnut charts (Temp + Humidity) → only last reading
-          const value = last[key];
-          chart.data.datasets[0].data = [value, 100 - value];
-        }
-
-        chart.update();
-      }
-    })
-    .catch(err => console.error("History load error:", err));
-}
-
-function updateData(newData, pushTime = true) {
-  const now = new Date().toLocaleTimeString();
-
-  if (pushTime) {
-    if (dataStore.timestamps.length > 10) {
-      for (let key in dataStore) dataStore[key].shift();
-    }
-    dataStore.timestamps.push(now);
-    dataStore.nitrogen.push(newData.nitrogen);
-    dataStore.phosphorus.push(newData.phosphorus);
-    dataStore.potassium.push(newData.potassium);
-    dataStore.temperature.push(newData.temperature);
-    dataStore.humidity.push(newData.humidity);
-  }
 
   document.getElementById("n_value").textContent = newData.nitrogen;
   document.getElementById("p_value").textContent = newData.phosphorus;
   document.getElementById("k_value").textContent = newData.potassium;
 
   for (let key in charts) {
-    let chart = charts[key];
-
-    if (chart.config.type === "line") {
-      chart.update();
+    if (charts[key].config.type === 'line') {
+      charts[key].update();
     } else {
-      let value = newData[key];
-      chart.data.datasets[0].data = [value, 100 - value];
-      chart.update();
+      charts[key].data.datasets[0].data = [
+        newData[key],
+        100 - newData[key]
+      ];
+      charts[key].update();
     }
   }
 }
 
-document.getElementById("liveToggle").addEventListener("click", () => {
+// ---------------------------
+// LIVE Toggle Button
+// ---------------------------
+document.getElementById("liveToggle").onclick = () => {
   liveMode = !liveMode;
 
   const btn = document.getElementById("liveToggle");
   btn.textContent = liveMode ? "LIVE: ON" : "LIVE: OFF";
   btn.classList.toggle("live", liveMode);
 
-  if (liveMode) {
-    // start live mode
-    liveInterval = setInterval(fetchLatest, 10000);
-    fetchLatest();  // fetch immediately
-  } else {
-    // stop live mode
-    clearInterval(liveInterval);
-    fetchHistory();
-  }
-});
-
+  if (!liveMode) loadHistory();
+};
 
 initCharts();
-fetchHistory();
+loadHistory();
 
 </script>
 
