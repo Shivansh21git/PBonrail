@@ -43,11 +43,13 @@
 
 
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register("{% static 'service-worker.js' %}")
-    .then(() => console.log("Service Worker registered"));
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/static/service-worker.js")
+    .then(() => console.log("SW Registered"))
+    .catch(err => console.log("SW Error:", err));
 }
 </script>
+
 
 </body>
 </html>
