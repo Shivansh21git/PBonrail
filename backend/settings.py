@@ -32,6 +32,13 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+STATIC_URL = '/static/'
+# Where collectstatic will copy all static files
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_DIRS = [BASE_DIR / "core/static"]
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -55,6 +63,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Force long term immutable caching on static files
+WHITENOISE_MAX_AGE = 31536000  # 1 year
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -127,13 +139,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = '/static/'
-# Where collectstatic will copy all static files
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-STATICFILES_DIRS = [BASE_DIR / "core/static"]
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

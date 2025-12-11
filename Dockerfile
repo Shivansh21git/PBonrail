@@ -24,7 +24,7 @@ COPY . .
 # ⚠️ DO NOT run collectstatic during build in Railway
 # Django settings will fail because DATABASE_URL is not present yet.
 # Instead: let Railway run collectstatic via Release Phase.
-# RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
