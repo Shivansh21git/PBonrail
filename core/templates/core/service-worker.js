@@ -7,7 +7,7 @@ const STATIC_ASSETS = [
   "/static/core/style.css",
   "/static/icons/icon-192x192.png",
   "/static/icons/icon-512x512.png",
-  "/manifest.json"
+  "/templates/core/manifest.json"
 ];
 
 // Install SW
