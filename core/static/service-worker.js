@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v6";  
+const CACHE_VERSION = "v7";  
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 
@@ -8,7 +8,6 @@ const STATIC_ASSETS = [
   "/static/icons/icon-192x192.png",
   "/static/icons/icon-512x512.png",
   "/static/core/manifest.json",
-  "/service-worker.js"
 ];
 
 self.addEventListener("install", event => {

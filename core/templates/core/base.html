@@ -6,7 +6,8 @@
   <meta charset="UTF-8">
   <title>{% block title %}Bhoomitra{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'core/style.css' %}">
-  <link rel="manifest" href="{% static 'core/manifest.json' %}">
+  <link rel="manifest" href="/manifest.json">
+
   <link rel="icon" href="{% static 'core/favicon.ico' %}">
 
   <meta name="theme-color" content="#2196f3">
@@ -39,7 +40,7 @@
 
 <script>
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("{% static 'core/service-worker.js' %}")
+    navigator.serviceWorker.register("/service-worker.js'")
       .then(() => console.log("Service Worker registered"))
       .catch(err => console.error("SW registration failed", err));
 }
