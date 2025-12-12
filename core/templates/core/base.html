@@ -6,9 +6,10 @@
   <meta charset="UTF-8">
   <title>{% block title %}Bhoomitra{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'core/style.css' %}">
+  <link rel="manifest" href="{% static 'core/manifest.json' %}">
+  <link rel="icon" href="{% static 'core/favicon.ico' %}">
 
-  <link rel="manifest" href="{% static 'manifest.json' %}">
-<meta name="theme-color" content="#2196f3">
+  <meta name="theme-color" content="#2196f3">
 
 </head>
 <body>
@@ -35,19 +36,17 @@
   {% include 'core/footer.html' %}
 
 
-{% comment %} {% block extra_scripts %}
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
-{% endblock %} {% endcomment %}
-
 
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register("{% static 'service-worker.js' %}")
-    .then(() => console.log("Service Worker registered"));
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("{% static 'core/service-worker.js' %}")
+      .then(() => console.log("Service Worker registered"))
+      .catch(err => console.error("SW registration failed", err));
 }
 </script>
+
+
+
 
 </body>
 </html>

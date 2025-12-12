@@ -24,10 +24,11 @@ COPY . .
 # ⚠️ DO NOT run collectstatic during build in Railway
 # Django settings will fail because DATABASE_URL is not present yet.
 # Instead: let Railway run collectstatic via Release Phase.
-# RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
 # Gunicorn command
-CMD ["bash", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn backend.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "backend.asgi:application"]
+
 

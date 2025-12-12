@@ -12,6 +12,10 @@ from django.conf import settings
 from dotenv import load_dotenv
 from django.http import JsonResponse
 import os
+
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 load_dotenv()
 
 
@@ -73,13 +77,37 @@ def device_data_page(request, device_id):
     """Renders the HTML page with JS fetch"""
     return render(request, 'core/device_data.html', {"device_id": device_id})
 
+
 @api_view(["POST"])
-@permission_classes([])  # AllowAny for now; change to IsAuthenticated later
+@permission_classes([])  # AllowAny for now
 def push_single(request):
     serializer = DeviceDataSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        instance = serializer.save()
+
+        # Prepare payload for WebSocket clients
+        payload = {
+            "nitrogen": instance.nitrogen,
+            "phosphorus": instance.phosphorus,
+            "potassium": instance.potassium,
+            "temperature": instance.temperature,
+            "humidity": instance.humidity,
+            "timestamp": instance.timestamp.strftime("%H:%M:%S"),
+            "device_id": instance.device.device_id,
+        }
+
+        # Broadcast to WebSocket group
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            instance.device.device_id,
+            {
+                "type": "send_update",
+                "data": payload
+            }
+        )
+
         return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
