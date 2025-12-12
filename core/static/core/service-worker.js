@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v4";   // change on every deployment
+const CACHE_VERSION = "v4";  
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 
@@ -7,20 +7,17 @@ const STATIC_ASSETS = [
   "/static/core/style.css",
   "/static/icons/icon-192x192.png",
   "/static/icons/icon-512x512.png",
-  "/static/core/manifest.json"
-];  
+  "/static/core/manifest.json",
+  "/service-worker.js"
+];
 
-// Install SW
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(STATIC_CACHE).then(cache => {
-      return cache.addAll(STATIC_ASSETS);
-    })
+    caches.open(STATIC_CACHE).then(cache => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });
 
-// Activate SW → clears old caches
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -34,33 +31,34 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// Fetch Handler
 self.addEventListener("fetch", event => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Cache static assets first (cache-first strategy)
+  // Cache static assets (cache-first)
   if (STATIC_ASSETS.includes(url.pathname)) {
     event.respondWith(
-      caches.match(req).then(cacheRes => {
-        return (
-          cacheRes ||
-          fetch(req).then(fetchRes => {
-            caches.open(STATIC_CACHE).then(cache => cache.put(req, fetchRes.clone()));
-            return fetchRes;
-          })
-        );
-      })
+      caches.match(req).then(cacheRes =>
+        cacheRes ||
+        fetch(req).then(fetchRes => {
+          caches.open(STATIC_CACHE).then(cache =>
+            cache.put(req, fetchRes.clone())
+          );
+          return fetchRes;
+        })
+      )
     );
     return;
   }
 
-  // For HTML pages → network first
+  // HTML pages → network first
   if (req.headers.get("accept")?.includes("text/html")) {
     event.respondWith(
       fetch(req)
         .then(fetchRes => {
-          caches.open(DYNAMIC_CACHE).then(cache => cache.put(req, fetchRes.clone()));
+          caches.open(DYNAMIC_CACHE).then(cache =>
+            cache.put(req, fetchRes.clone())
+          );
           return fetchRes;
         })
         .catch(() => caches.match(req))
@@ -68,7 +66,7 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Default fallback → cache-first
+  // Default → cache first
   event.respondWith(
     caches.match(req).then(cacheRes => cacheRes || fetch(req))
   );
