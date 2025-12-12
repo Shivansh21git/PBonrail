@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v3";   // change on every deployment
+const CACHE_VERSION = "v4";   // change on every deployment
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 
@@ -8,7 +8,7 @@ const STATIC_ASSETS = [
   "/static/icons/icon-192x192.png",
   "/static/icons/icon-512x512.png",
   "/static/core/manifest.json"
-];
+];  
 
 // Install SW
 self.addEventListener("install", event => {
