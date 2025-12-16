@@ -18,6 +18,8 @@ urlpatterns = [
         'document_root': settings.STATIC_ROOT,
         'path': 'service-worker.js'
     }),
+    
+    path("accounts/", include("allauth.urls")),
 ]
 
 if settings.DEBUG:
