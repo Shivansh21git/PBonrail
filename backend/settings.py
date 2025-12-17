@@ -172,7 +172,17 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 # No email verification (optional)
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
+# Trust Cloudflare / Railway proxy
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+USE_X_FORWARDED_HOST = True
+
+SECURE_SSL_REDIRECT = True
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Social account providers settings
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "SCOPE": ["profile", "email"],
