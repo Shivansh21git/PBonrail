@@ -67,6 +67,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -162,9 +163,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'              # Named URL pattern
 LOGIN_REDIRECT_URL = 'dashboard' # After successful login
 LOGOUT_REDIRECT_URL = '/login/'    # After logout
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+# Allauth settings
+# Login using email only
+ACCOUNT_LOGIN_METHODS = {"email"}
+# Signup fields (email + password only)
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+# No email verification (optional)
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 

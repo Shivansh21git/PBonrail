@@ -222,6 +222,17 @@ label {
   background-color: #1b5e20;
 }
 
+.btn-google {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #4285f4;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+
 /*---------------------------------------------libe-button------------------------------------------------------------------------
 #liveToggle {
   background: #007bff;
