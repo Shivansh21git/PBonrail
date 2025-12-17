@@ -34,9 +34,10 @@
 
   <p class="form-note">Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
  
-  <a href="{% url 'socialaccount_login' 'google' %}" class="btn-google">
-  Sign in with Google
+<a href="{% provider_login_url 'google' %}">
+    Sign in with Google
 </a>
+
 
 </div>
 {% endblock %}
