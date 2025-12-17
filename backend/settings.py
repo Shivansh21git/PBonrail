@@ -189,6 +189,7 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {"access_type": "online"},
     }
 }
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
 MQTT_HOST = os.getenv('MQTT_BROKER')
