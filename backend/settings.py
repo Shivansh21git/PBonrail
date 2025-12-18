@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["ar.bhoomitra.space", "localhost",]
+ALLOWED_HOSTS = ["ar.bhoomitra.space", "localhost", "127.0.0.1",]
 
 
 STATIC_URL = '/static/'
@@ -116,14 +116,15 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.getenv("DATABASE_URL"),
+    "default": dj_database_url.parse(
+        DATABASE_URL,
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=not DEBUG,  # 🔥 KEY FIX
     )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -182,7 +183,8 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 USE_X_FORWARDED_HOST = True
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = not DEBUG
+
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -203,7 +205,7 @@ MQTT_TOPIC = os.getenv('MQTT_PUB_TOPIC')
 MQTT_PORT  = os.getenv('BROKER_PORT')
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://ar.bhoomitra.space", "http://ar.bhoomitra.space", "http://localhost:8000",
+    "https://ar.bhoomitra.space", "http://ar.bhoomitra.space", "http://localhost:8000", "http://127.0.0.1:8000",
 ]
 CSRF_COOKIE_HTTPONLY = True
 
