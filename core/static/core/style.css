@@ -222,6 +222,17 @@ label {
   background-color: #1b5e20;
 }
 
+.btn-google {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #e71a1a;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+
 /*---------------------------------------------libe-button------------------------------------------------------------------------
 #liveToggle {
   background: #007bff;
@@ -235,3 +246,59 @@ label {
 #liveToggle.live {
   background: #28a745;
 }*/
+
+/*---------------------------------------------landing Page------------------------------------------------------------------------*/
+
+
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  margin: 20px 0;
+  color: #555;
+}
+
+.hero-image {
+  max-height: 350px;
+}
+
+.section-title {
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.features-section {
+  padding: 60px 0;
+  background: #fff;
+}
+
+.feature-card {
+  padding: 20px;
+}
+
+.product-section {
+  padding: 70px 0;
+}
+
+.product-img {
+  width: 100%;
+  max-width: 250px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.workflow-section {
+  padding: 60px 0;
+  background: #eef4ed;
+  font-size: 1.2rem;
+}
+
+.cta-section {
+  padding: 70px 0;
+  background: #2e7d32;
+  color: white;
+}

@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 import dj_database_url
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,12 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x-jcs!gm%rwsp4o75hba)-(4!8dlmo6br41lc3842&-11pus4('
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["ar.bhoomitra.space", "localhost", "127.0.0.1",]
 
 
 STATIC_URL = '/static/'
@@ -37,6 +39,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [BASE_DIR / "core/static"]
+
+SITE_ID = 1
+
 
 
 # Application definition
@@ -48,7 +53,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "rest_framework",
+    #allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'rest_framework',
     'core',
     "channels",
 ]
@@ -60,13 +70,22 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Force long term immutable caching on static files
 WHITENOISE_MAX_AGE = 31536000  # 1 year
+WHITENOISE_USE_FINDERS = False
+
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -97,14 +116,15 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
+# DATABASE_URL = os.getenv("DATABASE_URL")
+
 DATABASES = {
     "default": dj_database_url.config(
         default=os.getenv("DATABASE_URL"),
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=not DEBUG,  # 🔥 KEY FIX
     )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -150,7 +170,34 @@ LOGIN_URL = 'login'              # Named URL pattern
 LOGIN_REDIRECT_URL = 'dashboard' # After successful login
 LOGOUT_REDIRECT_URL = '/login/'    # After logout
 
+# Allauth settings
+# Login using email only
+ACCOUNT_LOGIN_METHODS = {"email"}
+# Signup fields (email + password only)
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+# No email verification (optional)
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
+# Trust Cloudflare / Railway proxy
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+USE_X_FORWARDED_HOST = True
+
+SECURE_SSL_REDIRECT = not DEBUG
+
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+
+# Social account providers settings
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
 MQTT_HOST = os.getenv('MQTT_BROKER')
@@ -158,5 +205,16 @@ MQTT_TOPIC = os.getenv('MQTT_PUB_TOPIC')
 MQTT_PORT  = os.getenv('BROKER_PORT')
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://ar.bhoomitra.space",  "https://dev.bhoomitra.space", "http://ar.bhoomitra.space","https://ar.bhoomitra.space"
+    "https://ar.bhoomitra.space", "http://ar.bhoomitra.space", "http://localhost:8000", "http://127.0.0.1:8000",
 ]
+CSRF_COOKIE_HTTPONLY = True
+
+
+SECURE_HSTS_SECONDS = 31536000   # 1 year
+SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "DENY"
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
