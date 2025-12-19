@@ -289,7 +289,7 @@ label {
 /* Features */
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.3rem;
 }
 
@@ -307,8 +307,8 @@ label {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 .feature-box img {
-  width: 270px;
-  height: 240px;
+  width: 200px;
+  height: 200px;
   object-fit: contain;
   margin-bottom: 1rem;
   transition: transform 0.3s ease;
@@ -331,7 +331,7 @@ label {
 /* Product showcase */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 2rem;
   align-items: center;
 }
@@ -341,8 +341,8 @@ label {
 }
 
 .product-card img {
-  width: 280px;
-  height: 240px;
+  width: 200px;
+  height: 200px;
   object-fit: contain;
   background: #fff;
   padding: 10px;
