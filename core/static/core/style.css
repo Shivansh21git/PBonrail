@@ -1,4 +1,4 @@
-/* Base styling */
+/* ================= BASE STYLING ================= */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -6,37 +6,41 @@ body {
   color: #333;
 }
 
-/* Anchor tag styles */
+html, body {
+  height: 100%;
+}
+
 a {
   text-decoration: none;
   color: #2e7d32;
 }
 
-/* Container */
+/* ================= CONTAINER ================= */
 .container {
   max-width: 1100px;
   margin: 0 auto;
   padding: 1rem;
 }
 
-/* Header styling */
+/* ================= HEADER ================= */
 .main-header {
   background-color: #e8f5e9;
   border-bottom: 1px solid #c8e6c9;
-  padding: 1rem 0;
+}
+
+.main-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .logo a {
   font-size: 1.8rem;
   font-weight: bold;
-
 }
 
-.nav-links {
-  float: right;
-}
-
-.nav-links a, .logout-btn {
+.nav-links a,
+.logout-btn {
   margin-left: 1rem;
   font-size: 1rem;
   background: none;
@@ -45,24 +49,18 @@ a {
   color: #2e7d32;
 }
 
-.logout-btn:hover, .nav-links a:hover {
+.nav-links a:hover,
+.logout-btn:hover {
   color: #1b5e20;
 }
 
-/* Flex layout for page */
-html, body {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Main content */
+/* ================= MAIN CONTENT ================= */
 .main-content {
-  flex: 1;
   padding: 2rem;
+  min-height: calc(100vh - 160px);
 }
 
-/* Footer styling */
+/* ================= FOOTER ================= */
 .main-footer {
   text-align: center;
   padding: 1rem;
@@ -71,151 +69,14 @@ html, body {
   border-top: 1px solid #dcedc8;
 }
 
-/* Hero section */
-.hero {
-  background: linear-gradient(to right, #e8f5e9, #c8e6c9);
-  text-align: center;
-  padding: 4rem 1rem;
-  border-bottom: 1px solid #a5d6a7;
-}
-
-.hero h1 {
-  font-size: 2.8rem;
-  margin-bottom: 0.5rem;
-}
-
-.hero .brand {
-  color: #2e7d32;
-}
-
-.hero p {
-  font-size: 1.2rem;
-  color: #555;
-  margin-bottom: 2rem;
-}
-
-/* Primary button */
+/* ================= BUTTONS ================= */
 .btn-primary {
   background-color: #2e7d32;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 5px;
-  text-decoration: none;
   font-weight: bold;
-  transition: background 0.3s;
   display: inline-block;
-}
-
-.btn-primary:hover {
-  background-color: #9d2695;
-}
-
-/* Form container */
-.form-container {
-  max-width: 400px;
-  margin: 2rem auto;
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.form-container h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #2e7d32;
-}
-
-.form-container button {
-  width: 100%;
-  margin-top: 1rem;
-}
-
-
-
-/* Input field styling */
-input[type="text"],
-input[type="password"],
-input[type="email"] {
-  width: 100%;
-  padding: 0.75rem;
-  margin-top: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus {
-  border-color: #2e7d32;
-  box-shadow: 0 0 4px rgba(46, 125, 50, 0.4);
-  outline: none;
-}
-
-/* Label styling */
-label {
-  display: block;
-  font-weight: 600;
-  color: #555;
-  margin-top: 1rem;
-}
-
-/* Input group wrapper (optional) */
-.input-group {
-  margin-bottom: 1rem;
-}
-
-/* Django message framework styling */
-.messages {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 1rem;
-}
-
-.messages li {
-  background: #ffcdd2;
-  color: #b71c1c;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  border-left: 5px solid #c62828;
-  border-radius: 4px;
-}
-
-
-.device-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.device-table th, .device-table td {
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.device-table th {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.device-table tr:hover {
-  background-color: #f1f8e9;
-}
-
-.btn-primary {
-  padding: 0.4rem 1rem;
-  text-decoration: none;
-  background-color: #2e7d32;
-  color: white;
-  border-radius: 4px;
-  font-size: 0.9rem;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -230,51 +91,64 @@ label {
   background: #e71a1a;
   color: #fff;
   border-radius: 6px;
-  text-decoration: none;
   font-weight: 500;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
 .btn-google:hover {
-  background-color: #1b5e20;
+  background-color: #b71c1c;
   transform: translateY(-2px);
 }
 
-/*---------------------------------------------libe-button------------------------------------------------------------------------
-#liveToggle {
-  background: #007bff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 6px;
-  color: #fff;
-  cursor: pointer;
-  margin-bottom: 15px;
+/* ================= FORMS ================= */
+.form-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-#liveToggle.live {
-  background: #28a745;
-}*/
 
-/* ================= LANDING PAGE ================= */
+label {
+  font-weight: 600;
+  margin-top: 1rem;
+  display: block;
+}
 
+input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
 
+input:focus {
+  border-color: #2e7d32;
+  outline: none;
+  box-shadow: 0 0 4px rgba(46, 125, 50, 0.4);
+}
+
+/* ================= LANDING HERO ================= */
 .landing-hero {
   background: linear-gradient(to right, #e8f5e9, #c8e6c9);
   padding: 4rem 1rem;
   text-align: center;
-  border-bottom: 1px solid #a5d6a7;
 }
 
 .landing-hero h1 {
   font-size: 2.6rem;
-  margin-bottom: 0.5rem;
 }
 
 .landing-hero p {
   font-size: 1.2rem;
   color: #555;
   max-width: 700px;
-  margin: 0.5rem auto 2rem;
+  margin: 1rem auto 2rem;
 }
 
+/* ================= SECTIONS ================= */
 .landing-section {
   padding: 3.5rem 1rem;
 }
@@ -286,11 +160,11 @@ label {
   color: #2e7d32;
 }
 
-/* Features */
+/* ================= FEATURES ================= */
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.3rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
 }
 
 .feature-box {
@@ -306,32 +180,27 @@ label {
   transform: translateY(-6px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
+
 .feature-box img {
-  width: 200px;
-  height: 200px;
+  width: 260px;
+  height: 220px;
   object-fit: contain;
   margin-bottom: 1rem;
   transition: transform 0.3s ease;
 }
 
 .feature-box:hover img {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .feature-box h4 {
-  margin-bottom: 0.4rem;
   color: #2e7d32;
 }
 
-.feature-box p {
-  font-size: 0.95rem;
-  color: #555;
-}
-
-/* Product showcase */
+/* ================= PRODUCT SHOWCASE ================= */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   align-items: center;
 }
@@ -341,13 +210,13 @@ label {
 }
 
 .product-card img {
-  width: 200px;
-  height: 200px;
+  width: 260px;
+  height: 220px;
   object-fit: contain;
   background: #fff;
-  padding: 10px;
+  padding: 12px;
+  border-radius: 10px;
   transition: transform 0.35s ease, box-shadow 0.35s ease;
-
 }
 
 .product-card:hover img {
@@ -355,20 +224,12 @@ label {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Mobile tweak */
-@media (max-width: 768px) {
-  .product-card img {
-    width: 200px;
-    height: 150px;
-  }
-}
-
 .product-card h4 {
   margin-top: 1rem;
   color: #2e7d32;
 }
 
-/* CTA */
+/* ================= CTA ================= */
 .landing-cta {
   background: #2e7d32;
   color: #fff;
@@ -376,13 +237,33 @@ label {
   padding: 3.5rem 1rem;
 }
 
-.landing-cta h2 {
-  margin-bottom: 1rem;
-}
-
 .landing-cta a {
   background: #fff;
   color: #2e7d32;
 }
 
+/* ================= MOBILE FIXES ================= */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
 
+  .landing-hero h1 {
+    font-size: 2rem;
+  }
+
+  .landing-hero p {
+    font-size: 1rem;
+  }
+
+  .feature-box img,
+  .product-card img {
+    width: 200px;
+    height: 160px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
