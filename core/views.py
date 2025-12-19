@@ -21,7 +21,7 @@ load_dotenv()
 
 
 def home_view(request):
-    return render(request, 'core/base.html')
+    return render(request, 'core/landing.html')
 
 def register_view(request):
     if request.method == 'POST':
