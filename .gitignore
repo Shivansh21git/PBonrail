@@ -21,3 +21,4 @@ db.sqlite3
 .env
 backup.sql
 db_backup_utf8.sql
+railway_backup.sql

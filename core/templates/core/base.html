@@ -17,20 +17,7 @@
   {% include 'core/header.html' %}
 
  <main class="main-content">
-  {% block content %}
-  <!-- Optional: Default homepage content -->
-  <section class="hero">
-    <div class="container">
-      <h1>Welcome to <span class="brand">Bhoomitra</span></h1>
-      <p>Your smart companion for monitoring soil health and nutrition.</p>
-      {% if not user.is_authenticated %}
-        <a href="{% url 'login' %}" class="btn-primary">Get Started</a>
-      {% else %}
-        <a href="{% url 'dashboard' %}" class="btn-primary">Go to Dashboard</a>
-      {% endif %}
-    </div>
-  </section> 
-  {% endblock %}
+  {% block content %}{% endblock %}
 </main>
 
 
@@ -43,9 +30,6 @@ if ("serviceWorker" in navigator) {
      navigator.serviceWorker.register("/service-worker.js?v=8");
 }
 </script>
-
-
-
 
 </body>
 </html>
