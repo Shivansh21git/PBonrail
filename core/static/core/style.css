@@ -216,10 +216,12 @@ label {
   color: white;
   border-radius: 4px;
   font-size: 0.9rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .btn-primary:hover {
   background-color: #1b5e20;
+  transform: translateY(-2px);
 }
 
 .btn-google {
@@ -230,8 +232,12 @@ label {
   border-radius: 6px;
   text-decoration: none;
   font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
+.btn-google:hover {
+  background-color: #1b5e20;
+  transform: translateY(-2px);
+}
 
 /*---------------------------------------------libe-button------------------------------------------------------------------------
 #liveToggle {
@@ -247,58 +253,135 @@ label {
   background: #28a745;
 }*/
 
-/*---------------------------------------------landing Page------------------------------------------------------------------------*/
+/* ================= LANDING PAGE ================= */
 
-
-
-.hero-title {
-  font-size: 3rem;
-  font-weight: 700;
+.landing-hero {
+  background: linear-gradient(to right, #e8f5e9, #c8e6c9);
+  padding: 4rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid #a5d6a7;
 }
 
-.hero-subtitle {
+.landing-hero h1 {
+  font-size: 2.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.landing-hero p {
   font-size: 1.2rem;
-  margin: 20px 0;
   color: #555;
+  max-width: 700px;
+  margin: 0.5rem auto 2rem;
 }
 
-.hero-image {
-  max-height: 350px;
+.landing-section {
+  padding: 3.5rem 1rem;
 }
 
 .section-title {
-  font-weight: 700;
-  margin-bottom: 30px;
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #2e7d32;
 }
 
-.features-section {
-  padding: 60px 0;
+/* Features */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.3rem;
+}
+
+.feature-box {
   background: #fff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.feature-card {
-  padding: 20px;
+.feature-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+.feature-box img {
+  width: 270px;
+  height: 240px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
 }
 
-.product-section {
-  padding: 70px 0;
+.feature-box:hover img {
+  transform: scale(1.1);
 }
 
-.product-img {
-  width: 100%;
-  max-width: 250px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.feature-box h4 {
+  margin-bottom: 0.4rem;
+  color: #2e7d32;
 }
 
-.workflow-section {
-  padding: 60px 0;
-  background: #eef4ed;
-  font-size: 1.2rem;
+.feature-box p {
+  font-size: 0.95rem;
+  color: #555;
 }
 
-.cta-section {
-  padding: 70px 0;
+/* Product showcase */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  align-items: center;
+}
+
+.product-card {
+  text-align: center;
+}
+
+.product-card img {
+  width: 280px;
+  height: 240px;
+  object-fit: contain;
+  background: #fff;
+  padding: 10px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+
+}
+
+.product-card:hover img {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile tweak */
+@media (max-width: 768px) {
+  .product-card img {
+    width: 200px;
+    height: 150px;
+  }
+}
+
+.product-card h4 {
+  margin-top: 1rem;
+  color: #2e7d32;
+}
+
+/* CTA */
+.landing-cta {
   background: #2e7d32;
-  color: white;
+  color: #fff;
+  text-align: center;
+  padding: 3.5rem 1rem;
 }
+
+.landing-cta h2 {
+  margin-bottom: 1rem;
+}
+
+.landing-cta a {
+  background: #fff;
+  color: #2e7d32;
+}
+
+
