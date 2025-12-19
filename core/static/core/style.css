@@ -182,8 +182,8 @@ input:focus {
 }
 
 .feature-box img {
-  width: 260px;
-  height: 220px;
+  width: 150px;
+  height: 120px;
   object-fit: contain;
   margin-bottom: 1rem;
   transition: transform 0.3s ease;
@@ -210,8 +210,8 @@ input:focus {
 }
 
 .product-card img {
-  width: 260px;
-  height: 220px;
+  width: 200px;
+  height: 180px;
   object-fit: contain;
   background: #fff;
   padding: 12px;
