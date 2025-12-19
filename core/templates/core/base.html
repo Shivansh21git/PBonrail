@@ -17,7 +17,7 @@
   {% include 'core/header.html' %}
 
  <main class="main-content">
-  {% block content %}
+  {% comment %} {% block content %}
   <!-- Optional: Default homepage content -->
   <section class="hero">
     <div class="container">
@@ -30,7 +30,7 @@
       {% endif %}
     </div>
   </section> 
-  {% endblock %}
+  {% endblock %} {% endcomment %}
 </main>
 
 
