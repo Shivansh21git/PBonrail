@@ -17,9 +17,9 @@
   {% include 'core/header.html' %}
 
  <main class="main-content">
-  {% comment %} {% block content %}
+  {% block content %}
   <!-- Optional: Default homepage content -->
-  <section class="hero">
+  {% comment %} <section class="hero">
     <div class="container">
       <h1>Welcome to <span class="brand">Bhoomitra</span></h1>
       <p>Your smart companion for monitoring soil health and nutrition.</p>
@@ -29,8 +29,8 @@
         <a href="{% url 'dashboard' %}" class="btn-primary">Go to Dashboard</a>
       {% endif %}
     </div>
-  </section> 
-  {% endblock %} {% endcomment %}
+  </section>  {% endcomment %}
+  {% endblock %}
 </main>
 
 
