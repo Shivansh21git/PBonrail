@@ -1,4 +1,3 @@
-/* Base styling */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -94,21 +93,6 @@ html, body {
   margin-bottom: 2rem;
 }
 
-/* Primary button */
-.btn-primary {
-  background-color: #2e7d32;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background 0.3s;
-  display: inline-block;
-}
-
-.btn-primary:hover {
-  background-color: #9d2695;
-}
 
 /* Form container */
 .form-container {
@@ -209,18 +193,36 @@ label {
   background-color: #f1f8e9;
 }
 
-.btn-primary {
+/* .btn-primary {
   padding: 0.4rem 1rem;
   text-decoration: none;
   background-color: #2e7d32;
   color: white;
   border-radius: 4px;
   font-size: 0.9rem;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+
+} */
+
+/* 
+Primary button */
+.btn-primary {
+  background-color: #2e7d32;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  /* min-height: 10px; */
+  /* line-height: 1.2; */
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  /* transition: background 0.3s; */
+  transition: 0.3s ease, transform 0.2s ease;
+  display: inline-block;
 }
 
 .btn-primary:hover {
-  background-color: #1b5e20;
+  /* background-color: #1b5e20; */
+  background-color: #9d2695;
   transform: translateY(-2px);
 }
 
@@ -296,9 +298,11 @@ label {
   background: #fff;
   padding: 1.5rem;
   border-radius: 10px;
+  border: 2px solid #2e7d32;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
 }
 
 .feature-box:hover {
@@ -326,6 +330,13 @@ label {
   font-size: 0.95rem;
   color: #555;
 }
+
+
+/* .feature-box:first-child {
+  border: 2px solid #2e7d32;
+  transform: scale(1.03);
+} */
+
 
 /* Product showcase */
 .product-grid {
@@ -385,6 +396,232 @@ label {
 }
 
 
+/* =================================================================================Add ons ======================================================================================================*/
+
+
+/* ===== IMAGE CARD ENHANCEMENT (ADD-ON) ===== */
+
+.feature-box img,
+.product-card img {
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+/* Prevent layout shift on slow image load */
+.feature-box,
+.product-card {
+  min-height: 340px;
+}
+
+/* ===== HOVER OVERLAY EFFECT ===== */
+
+.feature-box::after,
+.product-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(46,125,50,0.05),
+    rgba(46,125,50,0.15)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.feature-box:hover::after,
+.product-card:hover::after {
+  opacity: 1;
+}
+
+.feature-box,
+.product-card {
+  position: relative;
+}
+
+p {
+  line-height: 1.6;
+}
+
+
+
+/* ===== MOBILE ALIGNMENT FIX ===== */
+
+@media (max-width: 768px) {
+  .feature-grid,
+  .product-grid {
+    gap: 1.8rem;
+  }
+
+  .feature-box,
+  .product-card {
+    min-height: auto;
+  }
+
+  .landing-section {
+    padding: 2.5rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+}
+
+
+/* ===== SCROLL FADE-IN ===== */
+
+.feature-box,
+.product-card {
+  animation: fadeUp 0.6s ease both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= TESTIMONIALS ================= */
+
+.testimonials {
+  background: #f1f8f4;
+}
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.8rem;
+}
+
+.testimonial-card {
+  background: #fff;
+  padding: 1.6rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.testimonial-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.testimonial-header img {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.testimonial-header .avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #2e7d32;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-right: 12px;
+}
+
+.testimonial-header h4 {
+  margin: 0;
+  color: #2e7d32;
+  font-size: 1rem;
+}
+
+.testimonial-header span {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.testimonial-card p {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Mobile tweak */
+@media (max-width: 768px) {
+  .testimonial-card {
+    padding: 1.4rem;
+  }
+}
+
+
+/* ================= BENTO GRID ================= */
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 180px;
+  gap: 1rem;
+}
+
+.bento-item {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bento-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+.bento-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bento-item span {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+/* Large tile */
+.bento-item.large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 150px;
+  }
+
+  .bento-item.large {
+    grid-column: span 2;
+    grid-row: span 1;
 
 /* ================= RESPONSIVE FIXES ================= */
 

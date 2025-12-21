@@ -10,8 +10,8 @@
   <div class="container">
     <h1>Smart Soil. Smarter Farming.</h1>
     <p>
-      Bhoomitra helps farmers monitor soil health in real time using IoT
-      sensors and cloud analytics.
+    Bhoomitra helps farmers increase crop yield and reduce fertilizer waste
+    by monitoring real-time soil nutrients and conditions.
     </p>
 
     {% if user.is_authenticated %}
@@ -63,7 +63,9 @@
 <section class="landing-section">
   <div class="container">
     <h2 class="section-title">Our Product</h2>
-
+    <p style="text-align:center; color:#555; max-width:700px; margin:0 auto 2rem;">
+  A complete ecosystem – from soil sensors to cloud analytics and decision-making.
+    </p>
     <div class="product-grid">
       <div class="product-card">
         <img src="{% static 'core/images/product1.jpeg' %}" alt="Soil Sensor">
@@ -79,18 +81,103 @@
         <img src="{% static 'core/images/Dashboard.png' %}" alt="Dashboard">
         <h4>Web Dashboard</h4>
       </div>
-      <div class="product-card">
+      
+      {% comment %} <div class="product-card">
         <img src="{% static 'core/images/DataPage.png' %}" alt="Dashboard">
         <h4>Data Analytics</h4>
+      </div> {% endcomment %}
+    </div>
+  </div>
+</section>
+
+<section class="landing-section">
+  <div class="container">
+    <h2 class="section-title">Product Gallery</h2>
+
+    <div class="bento-grid">
+      <div class="bento-item large">
+        <img src="{% static 'core/images/product1.jpeg' %}" alt="Soil Sensor">
+        <span>Soil Sensor Unit</span>
       </div>
+
+      <div class="bento-item">
+        <img src="{% static 'core/images/product3.jpeg' %}" alt="Gateway">
+        <span>Gateway Device</span>
+      </div>
+
+      <div class="bento-item">
+        <img src="{% static 'core/images/Dashboard.png' %}" alt="Dashboard">
+        <span>Live Dashboard</span>
+      </div>
+
+      <div class="bento-item">
+        <img src="{% static 'core/images/DataPage.png' %}" alt="Analytics">
+        <span>Soil Analytics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="landing-section testimonials">
+  <div class="container">
+    <h2 class="section-title">What Our Customers Say</h2>
+    <p style="text-align:center; color:#666; margin-bottom:2rem;">
+  Trusted by farmers across multiple regions in the World
+    </p>
+    <div class="testimonial-grid">
+
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <img src="{% static 'core/images/user1.jpg' %}" alt="Farmer">
+          <div>
+            <h4>Ramesh Kumar</h4>
+            <span>Farmer • Rajasthan</span>
+          </div>
+        </div>
+        <p>
+          Bhoomitra helped me understand my soil better. 
+          Fertilizer usage reduced and crop yield improved significantly.
+        </p>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <img src="{% static 'core/images/user2.jpg' %}" alt="Agri Expert">
+          <div>
+            <h4>Neha Verma</h4>
+            <span>Agriculture Consultant</span>
+          </div>
+        </div>
+        <p>
+          Real-time NPK and soil data makes Bhoomitra a powerful tool 
+          for modern farming decisions.
+        </p>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <div class="avatar">S</div>
+          <div>
+            <h4>Sandeep Patel</h4>
+            <span>Organic Farmer</span>
+          </div>
+        </div>
+        <p>
+          Simple dashboard, accurate data, and very easy to use.
+          Bhoomitra is a must-have for smart farming.
+        </p>
+      </div>
+
     </div>
   </div>
 </section>
 
 <!-- CTA -->
 <section class="landing-cta">
-  <h2>Grow Smarter with Bhoomitra</h2>
+  <h2>Start Monitoring Your Soil Today</h2>
   <a href="{% url 'login' %}" class="btn-primary">Start Now</a>
+  <p style="margin-bottom:1rem;">No complex setup. Real-time insights.</p>
+
 </section>
 
 {% endblock %}
