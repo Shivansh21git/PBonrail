@@ -639,6 +639,66 @@ p {
   .bento-item.large {
     grid-column: span 2;
     grid-row: span 1;
+
+/* ================= RESPONSIVE FIXES ================= */
+
+.main-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.nav-links {
+  float: none;
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.8rem;
+  }
+
+  .landing-hero h1 {
+    font-size: 2rem;
+  }
+
+  .landing-hero p {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  .landing-hero .btn-primary {
+    display: block;
+    margin: 0.75rem auto;
+    width: fit-content;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-box {
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .feature-box img {
+    max-width: 120px;
+    height: 100px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .product-card img {
+    max-width: 200px;
+    height: 150px;
   }
 }
 
