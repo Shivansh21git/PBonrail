@@ -640,6 +640,8 @@ p {
     grid-column: span 2;
     grid-row: span 1;
 
+  }
+}
 /* ================= RESPONSIVE FIXES ================= */
 
 .main-header .container {
