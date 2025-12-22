@@ -394,7 +394,9 @@ Primary button */
   background: #fff;
   color: #2e7d32;
 }
-
+.landing-cta a:hover {
+  color: #fff
+}
 
 /* =================================================================================Add ons ======================================================================================================*/
 
@@ -442,9 +444,19 @@ Primary button */
 }
 
 p {
+  font-size: 1rem;
   line-height: 1.6;
+  color: #555;
 }
 
+.section-tagline {
+  font-size: 1.15rem;
+  color: #2e7d32;
+  font-weight: 500;
+  max-width: 750px;
+  margin: 0.5rem auto 2rem;
+  text-align: center;
+}
 
 
 /* ===== MOBILE ALIGNMENT FIX ===== */
@@ -595,6 +607,11 @@ p {
   object-fit: cover;
 }
 
+.bento-img {
+  cursor: zoom-in;
+  user-select: none;
+}
+
 .bento-item span {
   position: absolute;
   bottom: 10px;
@@ -683,4 +700,24 @@ p {
     max-width: 200px;
     height: 150px;
   }
+}
+
+/* ================= LIGHTBOX ================= */
+
+#lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: zoom-out;
+}
+
+#lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
