@@ -79,7 +79,7 @@ a {
 }
 
 .nav-cta:hover {
-  background: #256628;
+  background: #c47a44;
   color: #fff;
   
   
@@ -178,19 +178,20 @@ html, body {
 }
 
 .btn-outline {
-  border: 2px solid #2e7d32;
+  border: 2px solid #c47a44;
   padding: 0.75rem 1.5rem;
   border-radius: 5px;
-  color: #2e7d32;
+  color: #c47a44;
   font-weight: bold;
   text-decoration: none;
   transition: 0.2s ease;
 }
 
 .btn-outline:hover {
-  background: #2e7d32;
+  background: #c47a44;
   color: #fff;
 }
+
 
 /* ================= HERO IMAGE (FIXED SIZE) ================= */
 
@@ -244,6 +245,7 @@ html, body {
   background: #e3f2fd;
   color: #1976d2;
 } */
+
 
 
 /* ================= FEATURES SECTION ================= */
@@ -323,6 +325,9 @@ html, body {
 .bg-brown {
   background: #c47a44;
 }
+
+
+
 
 /* ================= HOW IT WORKS ================= */
 
@@ -649,17 +654,6 @@ html, body {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 /* Form container */
 .form-container {
   max-width: 400px;
@@ -788,7 +782,8 @@ Primary button */
 
 .btn-primary:hover {
   /* background-color: #1b5e20; */
-  background-color: #9d2695;
+  /* background-color: #9d2695; */
+  background-color: #c47a44;
   transform: translateY(-2px);
 }
 
@@ -803,7 +798,7 @@ Primary button */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 .btn-google:hover {
-  background-color: #1b5e20;
+  background-color: #c47a44;
   transform: translateY(-2px);
 }
 
