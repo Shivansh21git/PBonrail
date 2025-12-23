@@ -31,22 +31,5 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
-<div id="lightbox" onclick="closeLightbox()">
-  <img id="lightbox-img" src="" alt="Preview">
-</div>
-
-<script>
-  function openLightbox(src) {
-    const lightbox = document.getElementById("lightbox");
-    const img = document.getElementById("lightbox-img");
-    img.src = src;
-    lightbox.style.display = "flex";
-  }
-
-  function closeLightbox() {
-    document.getElementById("lightbox").style.display = "none";
-  }
-</script>
-
 </body>
 </html>

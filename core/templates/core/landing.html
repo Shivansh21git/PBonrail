@@ -145,7 +145,7 @@
 
       <div class="testimonial-card">
         <div class="testimonial-header">
-          <img src="{% static 'core/images/user1.jpg' %}" alt="Farmer">
+          <img src="{% static 'core/images/user1.jpeg' %}" alt="Farmer">
           <div>
             <h4>Ramesh Kumar</h4>
             <span>Farmer • Rajasthan</span>
@@ -206,5 +206,22 @@
 </section>
 
 <!-- Lightbox -->
+
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="Preview">
+</div>
+
+<script>
+  function openLightbox(src) {
+    const lightbox = document.getElementById("lightbox");
+    const img = document.getElementById("lightbox-img");
+    img.src = src;
+    lightbox.style.display = "flex";
+  }
+
+  function closeLightbox() {
+    document.getElementById("lightbox").style.display = "none";
+  }
+</script>
 
 {% endblock %}
