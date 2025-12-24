@@ -33,7 +33,7 @@
     <!-- RIGHT: IMAGE -->
     <div class="hero-image-wrapper">
       <img
-        src="{% static 'core/images/product1.jpeg' %}"
+        src="{% static 'core/images/farmer.png' %}"
         alt="Bhoomitra Soil Sensor"
         class="hero-image"
       >
@@ -305,6 +305,16 @@
         >
         <span>Gateway Device</span>
       </div>
+    
+      <div class="bento-item">
+        <img 
+          src="{% static 'core/images/hub.jpeg' %}" 
+          alt="Farm Hub"
+          class="bento-img"
+          onclick="openLightbox(this.src)"
+        >
+        <span>Complete Farm Hub</span>
+      </div>
 
       <div class="bento-item">
         <img 
@@ -329,6 +339,48 @@
 
   </div>
 </section>
+
+<section class="landing-section world-map-section">
+  <div class="container">
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <span class="section-badge badge-blue">Global Reach</span>
+
+      <h2 class="section-title">
+        Serving Farmers Across the <span class="text-green">World</span>
+      </h2>
+
+      <p class="section-subtext">
+        Bhoomitra is trusted by users across multiple regions,
+        helping farmers make smarter soil decisions.
+      </p>
+    </div>
+
+    <!-- Stats -->
+    <div class="map-stats">
+      <div class="stat-item">
+        <h3>5+</h3>
+        <p>Countries</p>
+      </div>
+      <div class="stat-item">
+        <h3>20+</h3>
+        <p>Farms Served</p>
+      </div>
+      <div class="stat-item">
+        <h3>20+</h3>
+        <p>AgriTech Enthusiast served</p>
+      </div>
+    </div>
+
+    <!-- Map -->
+<div class="map-wrapper">
+  {% include "core/partials/world.svg" %}
+</div>
+
+</div>
+</section>
+
 
 <section class="landing-section testimonials">
   <div class="container">

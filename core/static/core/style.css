@@ -536,6 +536,68 @@ html, body {
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
+/* ================= WORLD MAP SECTION ================= */
+
+.world-map-section {
+  background: #fff;
+}
+
+.map-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.5rem;
+  max-width: 700px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.stat-item h3 {
+  font-size: 2rem;
+  color: #2e7d32;
+  margin-bottom: 0.3rem;
+}
+
+.stat-item p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.map-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+
+svg {
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  background: #fff; /* light blue ocean */
+}
+
+path {
+  fill: #cccccc;
+  stroke: #ffffff;
+  stroke-width: 0.5;
+  transition: fill 0.3s ease;
+}
+
+path:hover {
+  fill: #c47a44 !important; /* red on hover */
+  cursor: pointer;
+}
+
+/* Example: highlight specific regions permanently */
+path#IN,
+path#TZ,
+path#MU,
+path#PP,
+path#ZM{
+  fill: #2e7d32; /* yellow for North America */
+}
+
 
 /* ================= TESTIMONIALS ================= */
 
