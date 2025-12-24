@@ -1,21 +1,27 @@
-
 <header class="main-header">
-  <div class="container">
+  <div class="container header-inner">
+
+    <!-- Logo -->
     <div class="logo">
       <a href="{% url 'base' %}">🌿 <strong>Bhoomitra</strong></a>
-    
+    </div>
+
+    <!-- Navigation -->
     <nav class="nav-links">
+
       {% if user.is_authenticated %}
-        {% comment %} <a href="{% url 'dashboard' %}">device</a>{% endcomment %}
-        <form action="{% url 'logout' %}" method="POST" style="display:inline;"> 
+        <form action="{% url 'logout' %}" method="POST">
           {% csrf_token %}
           <button type="submit" class="logout-btn">Logout</button>
         </form>
       {% else %}
-        <a href="{% url 'login' %}">Login</a>
-        <a href="{% url 'register' %}">Register</a>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#benefits">Benefits</a>
+        <a href="{% url 'login' %}" class="nav-cta">Login</a>
+        <a href="{% url 'register' %}" class="nav-cta">Get Started</a>
       {% endif %}
     </nav>
-    </div>
+
   </div>
 </header>
