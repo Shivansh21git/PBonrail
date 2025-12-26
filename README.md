@@ -1,75 +1,93 @@
-# 🌾 Plant Buddy
+# 🌱 Bhoomitra – Smart Soil Health Monitoring Platform
 
-**Plant Buddy** is a smart IoT-based soil monitoring system that helps users track essential parameters like **NPK levels** and **moisture** via a user-friendly web dashboard. Built for farmers, researchers, and agri-tech enthusiasts, it empowers you with real-time insights into soil and plant health.
+Bhoomitra is an **Complete IoT-based hardware and solfware solution for soil health monitoring and analytics** designed to help farmers improve crop yield and reduce fertilizer waste using real-time soil data.
 
----
-
-## 🚀 Features
-
-- 🔐 User registration, login, and logout system
-- 📋 Dashboard with user-specific device listings
-- 📡 MQTT-based real-time data ingestion
-- 🧠 InfluxDB time-series database for sensor data
-- 📊 View latest NPK and moisture values per device
-- 🌐 Local development ready, cloud scalable
-- ♻️ Modular and maintainable architecture
+It combines **custom IoT hardware**, **Django-based backend**, and a **modern analytics dashboard** to convert raw soil data into **actionable insights**.
 
 ---
 
-## 🛠️ Tech Stack
+## 🌾 Problem
 
-| Layer        | Technology             |
-|--------------|------------------------|
-| Backend      | Django (Python)        |
-| Database     | InfluxDB               |
-| Messaging    | MQTT (paho-mqtt)       |
-| Frontend     | HTML, CSS              |
-| Dev Tools    | Git, MQTTBox, VS Code  |
+Farmers often rely on intuition rather than data for:
+- Fertilizer usage
+- Irrigation planning
+- Crop decisions
+
+This leads to:
+- Reduced yield
+- Increased costs
+- Long-term soil degradation
 
 ---
 
-## 📁 Project Structure
+## 💡 Solution
 
-Plant-Buddy/
-├── backend/ # Django project configuration
-├── core/ # App logic: models, views, forms, templates
-    ├── templates/core/ # HTML templates
-    ├── static/core/ # Custom CSS
-├── pbenv/ # Python virtual environment (ignored by Git)
-├── mqtt_receiver.py # Script to subscribe to MQTT and write to InfluxDB
-├── .env # Optional environment variables
-├── requirements.txt
-└── manage.py
+Bhoomitra bridges this gap by providing:
+- IoT-based soil monitoring
+- Cloud-based analytics
+- Explainable soil health insights
+- Simple, farmer-friendly dashboard
+
+---
+
+## 📊 Product Capabilities
+
+- Real-time NPK, moisture, temperature monitoring
+- Soil health scoring (rule-based, explainable)
+- Trend analysis & degradation detection
+- Actionable recommendations (in progress)
+- Scalable multi-device architecture
+
+---
+
+## 🌍 Market Potential
+
+- Suitable for:
+  - Small & medium farmers
+  - Agri-consultants
+  - Research institutions
+- Deployable globally
+- Hardware + SaaS hybrid model
+
+---
+
+## 🚀 Vision
+
+To enable **sustainable, data-driven farming** by making soil intelligence accessible and affordable for every farmer.
+
+---
+
+## 🔑 Key Features
+
+- 📡 Real-time soil data ingestion (IoT devices)
+- 📊 Live & historical analytics dashboard
+- 🧠 Soil health scoring & interpretation
+- 📈 Trend-based insights
+- 🌍 Global presence visualization
+- 📱 PWA-enabled, farmer-friendly UI
+
+---
+
+## 🛠 Tech Stack
+
+- **Backend:** Django, DRF, Channels, PostgreSQL  
+- **Frontend:** HTML, CSS, JavaScript, Chart.js  
+- **IoT:** ESP-based devices, sensor integration  
+
+---
+
+## 🚀 Status
+
+✔ Core platform complete  
+🔄 Advanced analytics & recommendations in progress  
+
+---
+
+## 👨‍💻 Author
+
+**Shivansh Chauhan**  
+IoT & Embedded Systems Engineer  
+Smart Agriculture | Automation
 
 
-## ⚙️ Getting Started
-
-### ✅ 1. Clone the repository
-
-bash
-git clone https://github.com/your-username/Plant-Buddy.git
-cd Plant-Buddy
-
- ## 🐍 **Set up virtual environment**
-
-python -m venv pbenv
-# Activate the environment:
-# On Windows:
-pbenv\Scripts\activate
-# On Linux/macOS:
-source pbenv/bin/activate
-
-**Install dependencies**
-pip install -r requirements.txt
-
-
-📡 **MQTT Data Flow**
-
-{
-  "device_id": "ks-001",
-  "moisture": 48.5,
-  "N": 63.2,
-  "P": 44.1,
-  "K": 55.9
-}
 

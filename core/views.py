@@ -50,8 +50,22 @@ def dashboard_view(request):
         form = DeviceForm()
 
     devices = request.user.devices.all()
+
+    active_device = None
+    device_id = request.GET.get('device')
+
+    if device_id:
+        try:
+          active_device = devices.get(id=device_id)
+        except devices.model.DoesNotExist:
+          active_device = None
+
+    if not active_device and devices.exists():
+        active_device = devices.first()
+       
     return render(request, 'core/dashboard.html', {
         'devices': devices,
+        'active_device': active_device,
         'form': form
     })
 
