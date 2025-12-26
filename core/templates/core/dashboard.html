@@ -1,48 +1,103 @@
- {% extends 'core/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Dashboard - Plant Buddy{% endblock %}
 
 {% block content %}
+
+
+
+
+
+
 <div class="container">
   <h2>Welcome, {{ user.username }}</h2>
 
-  {% comment %} <h3>Register a New Krishi Sarthi Device</h3> {% endcomment %}
-<button id="toggleDeviceForm" class="btn-primary">+ Add New Device</button>
-<div id="deviceFormContainer" style="display: none; margin-top: 1rem;">
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn-primary">Add Device</button>
-</form>
-</div>
 
-<hr>
-  <h3>Your Devices</h3>
-  {% if devices %}
-  <table class="device-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Device ID</th>
-        <th>Location</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for device in devices %}
-      <tr>
-        <td>{{ device.name }}</td>
-        <td>{{ device.device_id }}</td>
-        <td>{{ device.location }}</td>
-        <td><a href="{% url 'device_data_page' device.device_id %}" class="btn-primary">View Data</a></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <p>No devices found. <a href="#" id="showDeviceForm">Add one now</a>.</p>
-  {% endif %}
-</div>
+
+  <section class="dashboard-section">
+    <div class="summary-card">
+
+      <!-- LEFT: SOIL HEALTH -->
+      <div class="summary-left">
+        <h3>Soil Health Score</h3>
+        <div class="health-score good">78</div>
+        <span class="health-label">Good Condition</span>
+        <p class="updated-time">Last updated: 5 minutes ago</p>
+      </div>
+
+      <!-- RIGHT: DEVICE DETAILS -->
+      <div class="summary-right">
+        <h4>Active Device</h4>
+
+        <form method="get">
+          <select name="device" class="device-selector" onchange="this.form.submit()">
+            {% for device in devices %}
+              <option value="{{ device.id }}"
+               {% if active_device and device.id == active_device.id %}selected{% endif %}>
+               {{ device.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+
+
+        {% if active_device %}
+          <div class="device-info">
+            <p><strong>Name:</strong> {{ active_device.name }}</p>
+            <p><strong>Device ID:</strong> {{ active_device.device_id }}</p>
+            <p><strong>Location:</strong> {{ active_device.location|default:"—" }}</p>
+            <p><strong>Status:</strong> <span class="device-online">Online</span></p>
+          </div>
+        {% else %}
+            <p>No device added yet.</p>
+        {% endif %}  
+
+        <!-- Actions -->
+        <div class="device-actions">
+              {% if active_device %}
+                <a href="{% url 'device_data_page' active_device.device_id %}" class="btn-outline small"> View Detailed Analytics → </a>
+              {% endif %}
+
+          <button id="toggleDeviceForm" class="btn-primary">+ Add New Device</button>
+          <div id="deviceFormContainer" style="display: none; margin-top: 1rem;">
+          <form method="post">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <button type="submit" class="btn-primary">Add Device</button>
+          </form>
+          </div>
+
+        </div>
+        </div>
+    </div>
+  </section>
+
+
+  <section class="dashboard-section">
+    <div class="health-status-grid">
+
+      <div class="status-card low">Nitrogen <span>Low</span></div>
+      <div class="status-card ok">Phosphorus <span>Optimal</span></div>
+      <div class="status-card ok">Potassium <span>Optimal</span></div>
+      <div class="status-card neutral">pH <span>Neutral</span></div>
+      <div class="status-card warning">Moisture <span>Dry</span></div>
+
+    </div>
+  </section>
+
+  <section class="dashboard-section">
+    <div class="recommendation-card">
+      <h4>Recommended Action Today</h4>
+      <ul>
+        <li>Add nitrogen-based fertilizer</li>
+        <li>Light irrigation in evening</li>
+      </ul>
+    </div>
+  </section>
+
+
+</div> 
+
 
 
 <script>
