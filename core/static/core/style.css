@@ -902,25 +902,52 @@ label {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
-  padding-left: 3rem;
+  padding-left: 2rem;
 }
 
-.health-score.good {
-  color: #2e7d32;
-  font-size: 8rem;
-  font-weight: bold;
+.summary-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0.4rem;
+}
+
+.health-score {
+  font-size: 8.2rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .health-label {
-  font-weight: 600;
-  font-size: 1.8rem;
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.health-score.healthy {
+  color: #2e7d32;
+}
+
+.health-score.moderate {
+  color: #f9a825;
+}
+
+.health-score.poor {
+  color: #c62828;
 }
 
 .updated-time {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #777;
-  
+  margin-top: 0.4rem;
 }
+
+.no-data {
+  font-size: 0.9rem;
+  color: #999;
+}
+
 
 .summary-right {
   display: flex;
@@ -973,35 +1000,54 @@ label {
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
 }
-
 .status-card {
-  padding: 1rem;
   border-radius: 12px;
+  padding: 0.9rem;
   text-align: center;
-  font-weight: 500;
-}
-
-.status-card span {
-  display: block;
-  margin-top: 0.3rem;
   font-size: 0.9rem;
 }
 
-.status-card.ok { background: #e8f5e9; color: #2e7d32; }
-.status-card.low { background: #ffebee; color: #c62828; }
-.status-card.warning { background: #fff8e1; color: #f9a825; }
-.status-card.neutral { background: #e3f2fd; color: #1976d2; }
+.param-name {
+  display: block;
+  font-weight: 600;
+}
+
+.param-status {
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.status-card.Optimal {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-card.Low {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.status-card.High {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-card.unknown {
+  background: #eeeeee;
+  color: #777;
+}
 
 .recommendation-card {
   background: #f9faf7;
-  border-left: 6px solid #2e7d32;
-  padding: 1.5rem 2rem;
+  border-left: 5px solid #2e7d32;
   border-radius: 12px;
+  padding: 1.4rem;
 }
 
-.recommendation-card ul {
-  margin-top: 0.8rem;
+.recommendation-card h4 {
+  margin-bottom: 0.4rem;
 }
+
 
 
 /* ================= RESPONSIVE FIXES ================= */
@@ -1112,5 +1158,10 @@ label {
 @media (max-width: 768px) {
   .summary-card {
     grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .health-score {
+    font-size: 2.5rem;
   }
 }
