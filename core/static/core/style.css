@@ -883,7 +883,8 @@ label {
 }
 
 
-/*--------------------------------- Dashboard update Styles -------------------------------------*/
+/*-------------------------------------------------------------------------------- Dashboard update Styles ------------------------------------------------------------------------------------------------*/
+
 
 .dashboard-section {
   margin-bottom: 3rem;
@@ -918,13 +919,6 @@ label {
   line-height: 1;
 }
 
-.health-label {
-  display: inline-block;
-  margin-top: 0.3rem;
-  font-size: 2rem;
-  font-weight: 500;
-}
-
 .health-score.healthy {
   color: #2e7d32;
 }
@@ -936,6 +930,25 @@ label {
 .health-score.poor {
   color: #c62828;
 }
+
+.health-label {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 2rem;
+  font-weight: 500;
+}
+.health-label.healthy {
+  color: #2e7d32;
+}
+
+.health-label.moderate {
+  color: #f9a825;
+}
+
+.health-label.poor {
+  color: #c62828;
+}
+
 
 .updated-time {
   font-size: 0.8rem;
