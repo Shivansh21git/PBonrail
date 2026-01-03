@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from .forms import UserregistrationForm, DeviceForm
 from .models import Device, DeviceData
+from core.utils.device_data import get_latest_device_data
+from core.analytics.soil_health import calculate_soil_health
 from django.contrib import messages
 from django.conf import settings
 from dotenv import load_dotenv
@@ -62,29 +64,40 @@ def dashboard_view(request):
 
     if not active_device and devices.exists():
         active_device = devices.first()
-       
+    
+    soil_health = None
+    if active_device:
+        latest_data = get_latest_device_data(active_device)
+        if latest_data:
+            soil_health = calculate_soil_health(latest_data)
+            
+    print("Soil Health:", soil_health)
+    print("Latest Data:", latest_data)
+    print("Active Device:", active_device)
+    print  
     return render(request, 'core/dashboard.html', {
         'devices': devices,
         'active_device': active_device,
+        'soil_health': soil_health,
         'form': form
     })
 
-@login_required
-def device_data_json(request, device_id):
-    device = get_object_or_404(Device, device_id=device_id, user=request.user)
-    latest_data = DeviceData.objects.filter(device=device).order_by("-timestamp").first()
+# @login_required
+# def device_data_json(request, device_id):
+#     device = get_object_or_404(Device, device_id=device_id, user=request.user)
+#     latest_data = DeviceData.objects.filter(device=device).order_by("-timestamp").first()
 
-    if latest_data:
-       return JsonResponse({
-            "nitrogen": latest_data.nitrogen,
-            "phosphorus": latest_data.phosphorus,
-            "potassium": latest_data.potassium,
-            "temperature": latest_data.temperature,
-            "humidity": latest_data.humidity,
-            "timestamp": latest_data.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-        })
-    else:
-        return JsonResponse({"error": "No data found"}, status=404)
+#     if latest_data:
+#        return JsonResponse({
+#             "nitrogen": latest_data.nitrogen,
+#             "phosphorus": latest_data.phosphorus,
+#             "potassium": latest_data.potassium,
+#             "temperature": latest_data.temperature,
+#             "humidity": latest_data.humidity,
+#             "timestamp": latest_data.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+#         })
+#     else:
+#         return JsonResponse({"error": "No data found"}, status=404)
 
 @login_required
 def device_data_page(request, device_id):
@@ -164,21 +177,16 @@ def get_device_data(request, device_id):
 @login_required
 def device_latest_json(request, device_id):
     device = get_object_or_404(Device, device_id=device_id, user=request.user)
-    latest = DeviceData.objects.filter(device=device).order_by("-timestamp").first()
+    latest_data = get_latest_device_data(device)
 
-    if not latest:
+    if not latest_data:
         return JsonResponse({"error": "No data found"}, status=404)
+    
+    latest_data["timestamp"] = latest_data["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
 
-    return JsonResponse({
-        "nitrogen": latest.nitrogen,
-        "phosphorus": latest.phosphorus,
-        "potassium": latest.potassium,
-        "temperature": latest.temperature,
-        "humidity": latest.humidity,
-        "timestamp": latest.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-    })
+    return JsonResponse(latest_data)
 
-@login_required
+# @login_required
 def device_history_json(request, device_id):
     device = get_object_or_404(Device, device_id=device_id, user=request.user)
     data = (

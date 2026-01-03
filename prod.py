@@ -12,10 +12,10 @@ DEVICE_ID = "TU-1"   # Change to your real device_id
 def generate_random_data():
     return {
         "device_id": DEVICE_ID,
-        "nitrogen": round(random.uniform(10, 50), 1),
-        "phosphorus": round(random.uniform(5, 20), 1),
-        "potassium": round(random.uniform(5, 25), 1),
-        "temperature": round(random.uniform(20, 35), 1),
+        "nitrogen": round(random.uniform(60, 250), 1),
+        "phosphorus": round(random.uniform(60, 250), 1),
+        "potassium": round(random.uniform(60, 250), 1),
+        "temperature": round(random.uniform(20, 45), 1),
         "humidity": round(random.uniform(40, 80), 1)
     }
 

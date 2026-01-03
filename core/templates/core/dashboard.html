@@ -4,26 +4,35 @@
 
 {% block content %}
 
-
-
-
-
-
 <div class="container">
   <h2>Welcome, {{ user.username }}</h2>
 
-
-
-  <section class="dashboard-section">
-    <div class="summary-card">
+<section class="dashboard-section">
+    <div class="summary-card {{ soil_health.label|lower }}">
 
       <!-- LEFT: SOIL HEALTH -->
-      <div class="summary-left">
-        <h3>Soil Health Score</h3>
-        <div class="health-score good">78</div>
-        <span class="health-label">Good Condition</span>
-        <p class="updated-time">Last updated: 5 minutes ago</p>
-      </div>
+        
+<div class="summary-left">
+  <h3 class="summary-title">Soil Health Score</h3>
+
+  {% if soil_health %}
+    <div class="health-score {{ soil_health.label|lower }}">
+      {{ soil_health.score }}
+    </div>
+
+    <span class="health-label {{ soil_health.label|lower }}">
+      {{ soil_health.label }} Condition
+    </span>
+
+    <p class="updated-time">
+      Last updated:
+      {{ soil_health_last_updated|default:"Just now" }}
+    </p>
+  {% else %}
+    <p class="no-data">No soil data available yet</p>
+  {% endif %}
+</div>
+
 
       <!-- RIGHT: DEVICE DETAILS -->
       <div class="summary-right">
@@ -73,27 +82,36 @@
   </section>
 
 
-  <section class="dashboard-section">
-    <div class="health-status-grid">
+{% if soil_health %}
+<section class="dashboard-section">
+  <div class="health-status-grid">
 
-      <div class="status-card low">Nitrogen <span>Low</span></div>
-      <div class="status-card ok">Phosphorus <span>Optimal</span></div>
-      <div class="status-card ok">Potassium <span>Optimal</span></div>
-      <div class="status-card neutral">pH <span>Neutral</span></div>
-      <div class="status-card warning">Moisture <span>Dry</span></div>
+    {% for parameter, status in soil_health.health_report.items %}
+      <div class="status-card {{ status }}">
+        <span class="param-name">{{ parameter|title }}</span>
+        <span class="param-status">{{ status|title }}</span>
+      </div>
+    {% endfor %}
 
-    </div>
-  </section>
+  </div>
+</section>
+{% endif %}
 
-  <section class="dashboard-section">
-    <div class="recommendation-card">
-      <h4>Recommended Action Today</h4>
-      <ul>
-        <li>Add nitrogen-based fertilizer</li>
-        <li>Light irrigation in evening</li>
-      </ul>
-    </div>
-  </section>
+
+<section class="dashboard-section">
+  <div class="recommendation-card">
+    <h4>Recommended Action</h4>
+
+    {% if soil_health %}
+      <p class="recommendation-text">
+        Based on current soil condition, corrective actions
+        will be shown here.
+      </p>
+    {% else %}
+      <p class="no-data">Recommendations will appear once data is available.</p>
+    {% endif %}
+  </div>
+</section>
 
 
 </div> 
