@@ -899,6 +899,15 @@ label {
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
+.summary-card.healthy{
+  background:#e8f5e9;
+}
+.summary-card.moderate{
+  background:#f3e9d9;
+}
+.summary-card.poor{
+  background:#ffebee;
+}
 .summary-left {
   display: flex;
   flex-direction: column;
