@@ -65,16 +65,18 @@ def dashboard_view(request):
     if not active_device and devices.exists():
         active_device = devices.first()
     
+    latest_data = None
     soil_health = None
     if active_device:
         latest_data = get_latest_device_data(active_device)
+        print("Latest Data:", latest_data)
         if latest_data:
             soil_health = calculate_soil_health(latest_data)
             
-    print("Soil Health:", soil_health)
-    print("Latest Data:", latest_data)
-    print("Active Device:", active_device)
-    print  
+    # print("Soil Health:", soil_health)
+    # print("Latest Data:", latest_data)
+    # print("Active Device:", active_device)
+     
     return render(request, 'core/dashboard.html', {
         'devices': devices,
         'active_device': active_device,
@@ -126,7 +128,7 @@ def push_single(request):
         # Broadcast to WebSocket group
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            instance.device.device_id,
+            f"device_{instance.device.device_id}",
             {
                 "type": "send_update",
                 "data": payload
@@ -178,6 +180,7 @@ def get_device_data(request, device_id):
 def device_latest_json(request, device_id):
     device = get_object_or_404(Device, device_id=device_id, user=request.user)
     latest_data = get_latest_device_data(device)
+
 
     if not latest_data:
         return JsonResponse({"error": "No data found"}, status=404)

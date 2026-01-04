@@ -13,6 +13,7 @@
         <form action="{% url 'logout' %}" method="POST">
           {% csrf_token %}
           <button type="submit" class="logout-btn">Logout</button>
+          
         </form>
       {% else %}
         <a href="#features">Features</a>
