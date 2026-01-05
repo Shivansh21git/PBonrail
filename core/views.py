@@ -108,37 +108,58 @@ def device_data_page(request, device_id):
 
 
 @api_view(["POST"])
-@permission_classes([])  # AllowAny for now
+@permission_classes([])
 def push_single(request):
     serializer = DeviceDataSerializer(data=request.data)
-    if serializer.is_valid():
-        instance = serializer.save()
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Prepare payload for WebSocket clients
-        payload = {
-            "nitrogen": instance.nitrogen,
-            "phosphorus": instance.phosphorus,
-            "potassium": instance.potassium,
-            "temperature": instance.temperature,
-            "humidity": instance.humidity,
-            "timestamp": instance.timestamp.strftime("%H:%M:%S"),
-            "device_id": instance.device.device_id,
+    instance = serializer.save()
+
+    # 1️⃣ Raw sensor data (used by ALL)
+    raw_data = {
+        "nitrogen": instance.nitrogen,
+        "phosphorus": instance.phosphorus,
+        "potassium": instance.potassium,
+        "temperature": instance.temperature,
+        "humidity": instance.humidity,
+        "timestamp": instance.timestamp.strftime("%H:%M:%S"),
+    }
+
+    channel_layer = get_channel_layer()
+    group = f"device_{instance.device.device_id}"
+
+    # 2️⃣ DASHBOARD message (includes soil health)
+    dashboard_payload = {
+        "type": "dashboard",
+        "device_id": instance.device.device_id,
+        "soil_health": calculate_soil_health(raw_data),
+    }
+
+    async_to_sync(channel_layer.group_send)(
+        group,
+        {
+            "type": "send_update",
+            "data": dashboard_payload,
         }
+    )
 
-        # Broadcast to WebSocket group
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"device_{instance.device.device_id}",
-            {
-                "type": "send_update",
-                "data": payload
-            }
-        )
+    # 3️⃣ DATAPAGE message (raw data only)
+    datapage_payload = {
+        "type": "datapage",
+        "device_id": instance.device.device_id,
+        "data": raw_data,
+    }
 
-        return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
+    async_to_sync(channel_layer.group_send)(
+        group,
+        {
+            "type": "send_update",
+            "data": datapage_payload,
+        }
+    )
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
 
 @api_view(["POST"])
 @permission_classes([])  # allow any for now

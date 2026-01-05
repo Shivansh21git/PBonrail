@@ -132,6 +132,7 @@ if(toggleBtn){
       toggleBtn.textContent = '+ Add New Device';
     }
   });}
+  
 if (showLink) {
   showLink.addEventListener('click', (e) => {
   e.preventDefault();
@@ -146,16 +147,19 @@ if (showLink) {
 {% if active_device %}
 <script>
   const deviceId = "{{ active_device.device_id }}";
-const socket = new WebSocket(
-  (location.protocol === "https:" ? "wss://" : "ws://")
-  + window.location.host
-  + "/ws/device/"
-  + deviceId
-  + "/"
-);
+  const socket = new WebSocket(
+    (location.protocol === "https:" ? "wss://" : "ws://")
+    + window.location.host
+    + "/ws/device/"
+    + deviceId
+    + "/"
+  );
 
-  socket.onmessage = function(event) {
+  socket.onmessage = function (event) {
     const payload = JSON.parse(event.data);
+
+    // 👇 IMPORTANT: ignore non-dashboard messages
+    if (payload.type !== "dashboard") return;
 
     updateSoilHealth(payload.soil_health);
     updateStatusCards(payload.soil_health.health_report);
@@ -164,18 +168,13 @@ const socket = new WebSocket(
   function updateSoilHealth(soil) {
     if (!soil) return;
 
-    const scoreEl = document.querySelector(".health-score");
-    const labelEl = document.querySelector(".health-label");
-    const summaryCard = document.querySelector(".summary-card");
+    document.querySelector(".health-score").textContent = soil.score;
+    document.querySelector(".health-label").textContent =
+      soil.label + " Condition";
 
-    if (!scoreEl || !labelEl || !summaryCard) return;
-
-    scoreEl.textContent = soil.score;
-    labelEl.textContent = soil.label + " Condition";
-
-    summaryCard.className = "summary-card " + soil.label.toLowerCase();
+    document.querySelector(".summary-card").className =
+      "summary-card " + soil.label.toLowerCase();
   }
-
 
   function updateStatusCards(report) {
     if (!report) return;
@@ -184,26 +183,13 @@ const socket = new WebSocket(
       const card = document.querySelector(
         `.status-card[data-param="${param}"]`
       );
-
       if (!card) return;
 
       card.className = "status-card " + status;
-
-      const statusEl = card.querySelector(".param-status");
-      if (statusEl) {
-        statusEl.textContent =
-          status.charAt(0).toUpperCase() + status.slice(1);
-      }
+      card.querySelector(".param-status").textContent =
+        status.charAt(0).toUpperCase() + status.slice(1);
     });
   }
-socket.onclose = function () {
-  console.warn("Dashboard WebSocket disconnected");
-};
-
-socket.onerror = function (error) {
-  console.error("WebSocket error:", error);
-};
-
 </script>
 {% endif %}
 
