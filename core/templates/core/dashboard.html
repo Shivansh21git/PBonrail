@@ -89,6 +89,7 @@
     {% for parameter, status in soil_health.health_report.items %}
       <div class="status-card {{ status }}" data-param="{{ parameter }}">
         <span class="param-name">{{ parameter|title }}</span>
+        <span class="param-value">--</span>
         <span class="param-status">{{ status|title }}</span>
       </div>
     {% endfor %}
@@ -155,41 +156,56 @@ if (showLink) {
     + "/"
   );
 
-  socket.onmessage = function (event) {
-    const payload = JSON.parse(event.data);
+socket.onmessage = function (event) {
+  const payload = JSON.parse(event.data);
 
-    // 👇 IMPORTANT: ignore non-dashboard messages
-    if (payload.type !== "dashboard") return;
+  // Defensive check
+  if (!payload) return;
 
+  // 1️⃣ Update overall soil health
+  if (payload.soil_health) {
     updateSoilHealth(payload.soil_health);
-    updateStatusCards(payload.soil_health.health_report);
-  };
-
-  function updateSoilHealth(soil) {
-    if (!soil) return;
-
-    document.querySelector(".health-score").textContent = soil.score;
-    document.querySelector(".health-label").textContent =
-      soil.label + " Condition";
-
-    document.querySelector(".summary-card").className =
-      "summary-card " + soil.label.toLowerCase();
   }
 
-  function updateStatusCards(report) {
-    if (!report) return;
-
-    Object.entries(report).forEach(([param, status]) => {
-      const card = document.querySelector(
-        `.status-card[data-param="${param}"]`
-      );
-      if (!card) return;
-
-      card.className = "status-card " + status;
-      card.querySelector(".param-status").textContent =
-        status.charAt(0).toUpperCase() + status.slice(1);
-    });
+  // 2️⃣ Update parameter cards (value + status)
+  if (payload.soil_health && payload.soil_health.health_report) {
+    updateStatusCards(payload, payload.soil_health.health_report);
   }
+};
+
+
+function updateSoilHealth(soil) {
+  document.querySelector(".health-score").textContent = soil.score;
+  document.querySelector(".health-label").textContent =
+    soil.label + " Condition";
+
+  document.querySelector(".summary-card").className =
+    "summary-card " + soil.label.toLowerCase();
+}
+
+
+function updateStatusCards(values, report) {
+  Object.keys(report).forEach(param => {
+    const card = document.querySelector(
+      `.status-card[data-param="${param}"]`
+    );
+    if (!card) return;
+
+    // Update status color
+    card.className = "status-card " + report[param];
+
+    // Update status text
+    card.querySelector(".param-status").textContent =
+      report[param].toUpperCase();
+
+    // 🔥 Update realtime value
+    const valueEl = card.querySelector(".param-value");
+    if (valueEl && values[param] !== undefined) {
+      valueEl.textContent = values[param];
+    }
+  });
+}
+
 </script>
 {% endif %}
 

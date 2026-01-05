@@ -116,7 +116,7 @@ def push_single(request):
 
     instance = serializer.save()
 
-    # 1️⃣ Raw sensor data (used by ALL)
+    # 🔹 Raw sensor values (used by dashboard + datapage)
     raw_data = {
         "nitrogen": instance.nitrogen,
         "phosphorus": instance.phosphorus,
@@ -126,40 +126,27 @@ def push_single(request):
         "timestamp": instance.timestamp.strftime("%H:%M:%S"),
     }
 
+    # 🔹 Derived analytics (used by dashboard only)
+    soil_health = calculate_soil_health(raw_data)
+
+    # 🔹 Final WebSocket payload (RICH but SIMPLE)
+    payload = {
+        "device_id": instance.device.device_id,
+        **raw_data,              # expands raw values at top level
+        "soil_health": soil_health,
+    }
+
     channel_layer = get_channel_layer()
-    group = f"device_{instance.device.device_id}"
-
-    # 2️⃣ DASHBOARD message (includes soil health)
-    dashboard_payload = {
-        "type": "dashboard",
-        "device_id": instance.device.device_id,
-        "soil_health": calculate_soil_health(raw_data),
-    }
-
     async_to_sync(channel_layer.group_send)(
-        group,
+        f"device_{instance.device.device_id}",
         {
             "type": "send_update",
-            "data": dashboard_payload,
-        }
-    )
-
-    # 3️⃣ DATAPAGE message (raw data only)
-    datapage_payload = {
-        "type": "datapage",
-        "device_id": instance.device.device_id,
-        "data": raw_data,
-    }
-
-    async_to_sync(channel_layer.group_send)(
-        group,
-        {
-            "type": "send_update",
-            "data": datapage_payload,
+            "data": payload
         }
     )
 
     return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
+
 
 @api_view(["POST"])
 @permission_classes([])  # allow any for now
