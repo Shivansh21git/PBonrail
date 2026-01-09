@@ -21,12 +21,15 @@ def get_status(value, min_val, max_val):
 
 
 def calculate_soil_health(data):
+    print(type(data))
     health_report = {}
     total_parameters = len(IDEAL_RANGES)
     optimal_count = 0
 
     for parameter, (min_val, max_val) in IDEAL_RANGES.items():
         value = data.get(parameter)
+        # print(parameter)
+        # print(value)
         status = get_status(value, min_val, max_val)
         health_report[parameter]  = status
         

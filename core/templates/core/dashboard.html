@@ -87,8 +87,9 @@
   <div class="health-status-grid">
 
     {% for parameter, status in soil_health.health_report.items %}
-      <div class="status-card {{ status }}">
+      <div class="status-card {{ status }}" data-param="{{ parameter }}">
         <span class="param-name">{{ parameter|title }}</span>
+        <span class="param-value">--</span>
         <span class="param-status">{{ status|title }}</span>
       </div>
     {% endfor %}
@@ -132,6 +133,7 @@ if(toggleBtn){
       toggleBtn.textContent = '+ Add New Device';
     }
   });}
+  
 if (showLink) {
   showLink.addEventListener('click', (e) => {
   e.preventDefault();
@@ -140,5 +142,72 @@ if (showLink) {
     });
   }
 </script>
+
+
+
+{% if active_device %}
+<script>
+  const deviceId = "{{ active_device.device_id }}";
+  const socket = new WebSocket(
+    (location.protocol === "https:" ? "wss://" : "ws://")
+    + window.location.host
+    + "/ws/device/"
+    + deviceId
+    + "/"
+  );
+
+socket.onmessage = function (event) {
+  const payload = JSON.parse(event.data);
+
+  // Defensive check
+  if (!payload) return;
+
+  // 1️⃣ Update overall soil health
+  if (payload.soil_health) {
+    updateSoilHealth(payload.soil_health);
+  }
+
+  // 2️⃣ Update parameter cards (value + status)
+  if (payload.soil_health && payload.soil_health.health_report) {
+    updateStatusCards(payload, payload.soil_health.health_report);
+  }
+};
+
+
+function updateSoilHealth(soil) {
+  document.querySelector(".health-score").textContent = soil.score;
+  document.querySelector(".health-label").textContent =
+    soil.label + " Condition";
+
+  document.querySelector(".summary-card").className =
+    "summary-card " + soil.label.toLowerCase();
+}
+
+
+function updateStatusCards(values, report) {
+  Object.keys(report).forEach(param => {
+    const card = document.querySelector(
+      `.status-card[data-param="${param}"]`
+    );
+    if (!card) return;
+
+    // Update status color
+    card.className = "status-card " + report[param];
+
+    // Update status text
+    card.querySelector(".param-status").textContent =
+      report[param].toUpperCase();
+
+    // 🔥 Update realtime value
+    const valueEl = card.querySelector(".param-value");
+    if (valueEl && values[param] !== undefined) {
+      valueEl.textContent = values[param];
+    }
+  });
+}
+
+</script>
+{% endif %}
+
 
 {% endblock %} 

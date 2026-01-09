@@ -65,16 +65,18 @@ def dashboard_view(request):
     if not active_device and devices.exists():
         active_device = devices.first()
     
+    latest_data = None
     soil_health = None
     if active_device:
         latest_data = get_latest_device_data(active_device)
+        print("Latest Data:", latest_data)
         if latest_data:
             soil_health = calculate_soil_health(latest_data)
             
-    print("Soil Health:", soil_health)
-    print("Latest Data:", latest_data)
-    print("Active Device:", active_device)
-    print  
+    # print("Soil Health:", soil_health)
+    # print("Latest Data:", latest_data)
+    # print("Active Device:", active_device)
+     
     return render(request, 'core/dashboard.html', {
         'devices': devices,
         'active_device': active_device,
@@ -106,36 +108,44 @@ def device_data_page(request, device_id):
 
 
 @api_view(["POST"])
-@permission_classes([])  # AllowAny for now
+@permission_classes([])
 def push_single(request):
     serializer = DeviceDataSerializer(data=request.data)
-    if serializer.is_valid():
-        instance = serializer.save()
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Prepare payload for WebSocket clients
-        payload = {
-            "nitrogen": instance.nitrogen,
-            "phosphorus": instance.phosphorus,
-            "potassium": instance.potassium,
-            "temperature": instance.temperature,
-            "humidity": instance.humidity,
-            "timestamp": instance.timestamp.strftime("%H:%M:%S"),
-            "device_id": instance.device.device_id,
+    instance = serializer.save()
+
+    # 🔹 Raw sensor values (used by dashboard + datapage)
+    raw_data = {
+        "nitrogen": instance.nitrogen,
+        "phosphorus": instance.phosphorus,
+        "potassium": instance.potassium,
+        "temperature": instance.temperature,
+        "humidity": instance.humidity,
+        "timestamp": instance.timestamp.strftime("%H:%M:%S"),
+    }
+
+    # 🔹 Derived analytics (used by dashboard only)
+    soil_health = calculate_soil_health(raw_data)
+
+    # 🔹 Final WebSocket payload (RICH but SIMPLE)
+    payload = {
+        "device_id": instance.device.device_id,
+        **raw_data,              # expands raw values at top level
+        "soil_health": soil_health,
+    }
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"device_{instance.device.device_id}",
+        {
+            "type": "send_update",
+            "data": payload
         }
+    )
 
-        # Broadcast to WebSocket group
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            instance.device.device_id,
-            {
-                "type": "send_update",
-                "data": payload
-            }
-        )
-
-        return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
 
 
 @api_view(["POST"])
@@ -178,6 +188,7 @@ def get_device_data(request, device_id):
 def device_latest_json(request, device_id):
     device = get_object_or_404(Device, device_id=device_id, user=request.user)
     latest_data = get_latest_device_data(device)
+
 
     if not latest_data:
         return JsonResponse({"error": "No data found"}, status=404)
