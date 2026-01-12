@@ -17,16 +17,38 @@
     </ul>
   {% endif %}
 
+  {% if form.non_field_errors %}
+    <ul class="messages">
+      {% for error in form.non_field_errors %}
+        <li class="error">{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   <form method="post">
     {% csrf_token %}
     <div class="input-group">
       {{ form.username.label_tag }}
       {{ form.username }}
+      {% if form.username.errors %}
+        <ul class="errorlist">
+          {% for error in form.username.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </div>
 
     <div class="input-group">
       {{ form.password.label_tag }}
       {{ form.password }}
+      {% if form.password.errors %}
+        <ul class="errorlist">
+          {% for error in form.password.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </div>
 
     <button type="submit" class="btn-primary">Login</button>
