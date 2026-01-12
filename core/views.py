@@ -5,6 +5,8 @@ from .serializers import DeviceDataSerializer
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserregistrationForm, DeviceForm
 from .models import Device, DeviceData
 from core.utils.device_data import get_latest_device_data
@@ -24,6 +26,15 @@ load_dotenv()
 
 def home_view(request):
     return render(request, 'core/landing.html')
+
+class CustomLoginView(LoginView):
+    template_name = 'core/login.html'
+    authentication_form = AuthenticationForm
+    
+    def form_invalid(self, form):
+        """Handle invalid form submission"""
+        messages.error(self.request, "Invalid username or password. Please try again.")
+        return super().form_invalid(form)
 
 def register_view(request):
     if request.method == 'POST':
