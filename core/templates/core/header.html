@@ -12,15 +12,20 @@
       {% if user.is_authenticated %}
         <form action="{% url 'logout' %}" method="POST">
           {% csrf_token %}
-          <button type="submit" class="logout-btn">Logout</button>
-          
+          <button type="submit" class="logout-btn">Logout</button>      
         </form>
-      {% else %}
+
+      {% elif request.path == '/' %}
         <a href="#features">Features</a>
         <a href="#how-it-works">How It Works</a>
         <a href="#benefits">Benefits</a>
         <a href="{% url 'login' %}" class="nav-cta">Login</a>
         <a href="{% url 'register' %}" class="nav-cta">Get Started</a>
+
+      {% else %}
+        <a href="{% url 'login' %}" class="nav-cta">Login</a>
+        <a href="{% url 'register' %}" class="nav-cta">Get Started</a>
+
       {% endif %}
     </nav>
 
