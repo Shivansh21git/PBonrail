@@ -194,7 +194,7 @@ if (startTestBtn) {
     fetch(`/api/start-test/${deviceId}/`, {
       method: "POST",
       headers: {
-        "X-CSRFToken": getCookie("csrftoken"),
+        "X-CSRFToken": "{{ csrf_token }}",
       }
     })
     .then(res => res.json())
