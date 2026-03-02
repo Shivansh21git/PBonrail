@@ -4,8 +4,8 @@ import random
 import json
 
 # Your API endpoint
-# API_URL = "https://ar.bhoomitra.space/api/push/" 
-API_URL = "http://localhost:8000/api/push/"      # CHANGE IF NEEDED
+API_URL = "https://ar.bhoomitra.space/api/push/" 
+# API_URL = "http://localhost:8000/api/push/"      # CHANGE IF NEEDED
 
 DEVICE_ID = "TU-1"   # Change to your real device_id
 
