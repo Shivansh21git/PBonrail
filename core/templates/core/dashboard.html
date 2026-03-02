@@ -261,14 +261,10 @@ if (startTestBtn) {
         `Result: ${payload.score} (${payload.label})`;
   
       // Update main soil score visually
-      updateSoilHealth({
-        score: payload.score,
-        label: payload.label
-      });
   
       startTestBtn.disabled = false;
     }
-  };
+  }
 
 
 function updateSoilHealth(soil) {

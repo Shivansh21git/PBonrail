@@ -198,8 +198,8 @@ def push_single(request):
                     "type": "send_update",
                     "data": {
                         "event": "test_completed",
-                        "score": soil_health["score"],
-                        "label": soil_health["label"]
+                        "soil_health": soil_health,
+                        **avg_data
                     }
                 }
             )
