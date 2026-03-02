@@ -31,6 +31,22 @@
   {% else %}
     <p class="no-data">No soil data available yet</p>
   {% endif %}
+
+  {% if active_device %}
+  <button id="startTestBtn" class="btn-primary">
+    🧪 Start Soil Test
+  </button>
+
+  <div id="testUI" style="margin-top:12px; display:none;">
+      <div style="background:#eee; height:18px; border-radius:10px;">
+          <div id="testProgressBar"
+               style="height:100%; width:0%; background:#2e7d32;
+                      border-radius:10px; transition:0.3s;"></div>
+      </div>
+      <p id="testProgressText" style="margin-top:6px; font-size:14px;"></p>
+      <p id="testResultText" style="margin-top:6px; font-weight:600;"></p>
+  </div>
+{% endif %}
 </div>
 
 
@@ -148,6 +164,37 @@ if (showLink) {
 {% if active_device %}
 <script>
   const deviceId = "{{ active_device.device_id }}";
+  // -----------------------------
+// 🧪 TEST MODE UI ELEMENTS
+// -----------------------------
+const startTestBtn = document.getElementById("startTestBtn");
+const testUI = document.getElementById("testUI");
+const progressBar = document.getElementById("testProgressBar");
+const progressText = document.getElementById("testProgressText");
+const resultText = document.getElementById("testResultText");
+
+if (startTestBtn) {
+  startTestBtn.onclick = function() {
+
+    fetch(`/api/start-test/${deviceId}/`, {
+      method: "POST"
+    })
+    .then(res => res.json())
+    .then(data => {
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      testUI.style.display = "block";
+      progressBar.style.width = "0%";
+      progressText.innerHTML = "Collecting samples...";
+      resultText.innerHTML = "";
+      startTestBtn.disabled = true;
+    });
+  };
+}
   const socket = new WebSocket(
     (location.protocol === "https:" ? "wss://" : "ws://")
     + window.location.host
@@ -156,22 +203,54 @@ if (showLink) {
     + "/"
   );
 
-socket.onmessage = function (event) {
-  const payload = JSON.parse(event.data);
-
-  // Defensive check
-  if (!payload) return;
-
-  // 1️⃣ Update overall soil health
-  if (payload.soil_health) {
-    updateSoilHealth(payload.soil_health);
-  }
-
-  // 2️⃣ Update parameter cards (value + status)
-  if (payload.soil_health && payload.soil_health.health_report) {
-    updateStatusCards(payload, payload.soil_health.health_report);
-  }
-};
+  socket.onmessage = function (event) {
+    const payload = JSON.parse(event.data);
+    if (!payload) return;
+  
+    // -----------------------------------
+    // 🟢 NORMAL SOIL HEALTH UPDATE
+    // -----------------------------------
+    if (payload.soil_health) {
+      updateSoilHealth(payload.soil_health);
+    }
+  
+    if (payload.soil_health && payload.soil_health.health_report) {
+      updateStatusCards(payload, payload.soil_health.health_report);
+    }
+  
+    // -----------------------------------
+    // 🔵 TEST PROGRESS
+    // -----------------------------------
+    if (payload.event === "test_progress") {
+  
+      const percent = (payload.collected / payload.required) * 100;
+  
+      testUI.style.display = "block";
+      progressBar.style.width = percent + "%";
+      progressText.innerHTML =
+        `Sample ${payload.collected} of ${payload.required}`;
+    }
+  
+    // -----------------------------------
+    // 🧪 TEST COMPLETED
+    // -----------------------------------
+    if (payload.event === "test_completed") {
+  
+      progressBar.style.width = "100%";
+      progressText.innerHTML = "✅ Test Completed";
+  
+      resultText.innerHTML =
+        `Result: ${payload.score} (${payload.label})`;
+  
+      // Update main soil score visually
+      updateSoilHealth({
+        score: payload.score,
+        label: payload.label
+      });
+  
+      startTestBtn.disabled = false;
+    }
+  };
 
 
 function updateSoilHealth(soil) {

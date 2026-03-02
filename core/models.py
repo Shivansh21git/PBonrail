@@ -23,3 +23,17 @@ class DeviceData(models.Model):
 
     def __str__(self):
         return f"Data for {self.device.name} at {self.timestamp:%Y-%m-%d %H:%M}"
+
+
+class SoilTestSession(models.Model):
+    device =models.ForeignKey(Device, on_delete=models.CASCADE)
+    start_time = models.DateTimeField(auto_now_add=True)
+    required_samples = models.IntegerField(default=5)
+    collected_samples = models.IntegerField(default=0)
+    completed = models.BooleanField(default=False)
+    result_score = models.IntegerField(null=True, blank=True)
+    result_label = models.CharField(max_length=20, null=True, blank=True)
+
+    def __str__(self):
+        return f"Test for {self.device.device_id} at {self.started_at}"
+    

@@ -4,7 +4,8 @@ import random
 import json
 
 # Your API endpoint
-API_URL = "https://ar.bhoomitra.space/api/push/"      # CHANGE IF NEEDED
+# API_URL = "https://ar.bhoomitra.space/api/push/" 
+API_URL = "http://localhost:8000/api/push/"      # CHANGE IF NEEDED
 
 DEVICE_ID = "TU-1"   # Change to your real device_id
 
@@ -31,7 +32,7 @@ def send_demo_data():
         except Exception as e:
             print("Error:", e)
 
-        time.sleep(25)   # send every 3 seconds
+        time.sleep(5)   # send every 3 seconds
 
 
 if __name__ == "__main__":
