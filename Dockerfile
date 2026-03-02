@@ -25,7 +25,7 @@ COPY . .
 # Django settings will fail because DATABASE_URL is not present yet.
 # Instead: let Railway run collectstatic via Release Phase.
 RUN python manage.py collectstatic --noinput
-Run python manage.py migrate
+# Run python manage.py migrate
 
 EXPOSE 8000
 
