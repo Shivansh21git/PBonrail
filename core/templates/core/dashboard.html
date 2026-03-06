@@ -200,8 +200,22 @@ if (startTestBtn) {
     .then(res => res.json())
     .then(data => {
 
-      if (data.error) {
-        alert(data.error);
+      if (data.status === "already_running") {
+
+        const confirmCancel = confirm(
+          `A test is already running (${data.collected}/${data.required} samples).\n\nPress OK to cancel it and start a new test.`
+        );
+      
+        if (!confirmCancel) return;
+      
+        fetch(`/api/cancel-test/${deviceId}/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+          }
+        })
+        .then(() => location.reload());
+      
         return;
       }
 

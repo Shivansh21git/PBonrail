@@ -329,8 +329,12 @@ def start_test(request, device_id):
         else:
             print("⚠️ Test already running")
             return Response(
-                {"error": "Test already running"},
-                status=400
+                {
+                    "status": "already_running",
+                    "collected": active.collected_samples,
+                    "required": active.required_samples
+                },
+                status=200
             )
 
     # ✅ CREATE NEW TEST SESSION
@@ -359,3 +363,22 @@ def get_latest_test_result(request, device_id):
         "label": test.result_label,
         "collected_samples": test.collected_samples
     })
+
+@api_view(["POST"])
+@permission_classes([])
+def cancel_test(request, device_id):
+
+    device = get_object_or_404(Device, device_id=device_id)
+
+    active = SoilTestSession.objects.filter(
+        device=device,
+        completed=False
+    ).first()
+
+    if not active:
+        return Response({"status": "no_active_test"})
+
+    active.completed = True
+    active.save()
+
+    return Response({"status": "test_cancelled"})
