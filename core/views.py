@@ -320,14 +320,18 @@ def start_test(request, device_id):
     active = SoilTestSession.objects.filter(
         device=device,
         completed=False
-    ).exists()
+    ).first()
 
     if active:
-        print("⚠️ Test already running")
-        return Response(
-            {"error": "Test already running"},
-            status=400
-        )
+        if timezone.now() - active.start_time > timedelta(minutes=5):
+            active.completed = True
+            active.save()
+        else:
+            print("⚠️ Test already running")
+            return Response(
+                {"error": "Test already running"},
+                status=400
+            )
 
     # ✅ CREATE NEW TEST SESSION
     test = SoilTestSession.objects.create(device=device)
