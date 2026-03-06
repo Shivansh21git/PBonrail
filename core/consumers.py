@@ -33,7 +33,9 @@ class DeviceLiveConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_update(self, event):
+        print("🔌 WebSocket Message:", event["data"])
         await self.send(text_data=json.dumps(event["data"]))
+  
 
     # ============================
     # SYNC ORM → ASYNC WRAPPER

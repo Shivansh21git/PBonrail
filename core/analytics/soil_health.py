@@ -49,3 +49,8 @@ def calculate_soil_health(data):
         "label": label,
         "health_report": health_report
         }
+
+
+def soil_Analytics(data):
+ 
+ pass 

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserregistrationForm, DeviceForm
-from .models import Device, DeviceData
+from .models import Device, DeviceData, SoilTestSession
 from core.utils.device_data import get_latest_device_data
 from core.analytics.soil_health import calculate_soil_health
 from django.contrib import messages
@@ -16,6 +16,8 @@ from django.conf import settings
 from dotenv import load_dotenv
 from django.http import JsonResponse
 import os
+from django.utils import timezone
+from datetime import timedelta
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -127,37 +129,115 @@ def push_single(request):
 
     instance = serializer.save()
 
-    # 🔹 Raw sensor values (used by dashboard + datapage)
-    raw_data = {
-        "nitrogen": instance.nitrogen,
-        "phosphorus": instance.phosphorus,
-        "potassium": instance.potassium,
-        "temperature": instance.temperature,
-        "humidity": instance.humidity,
-        "timestamp": instance.timestamp.strftime("%H:%M:%S"),
-    }
+    active_test = SoilTestSession.objects.filter(device=instance.device, completed=False).first()
+    if active_test:
+        print(f"📝 Collecting sample {active_test.collected_samples + 1} for test {active_test.id}")
 
-    # 🔹 Derived analytics (used by dashboard only)
-    soil_health = calculate_soil_health(raw_data)
+        readings = DeviceData.objects.filter(device=instance.device, timestamp__gte=active_test.start_time).order_by("timestamp")
 
-    # 🔹 Final WebSocket payload (RICH but SIMPLE)
-    payload = {
-        "device_id": instance.device.device_id,
-        **raw_data,              # expands raw values at top level
-        "soil_health": soil_health,
-    }
+        sample_count = readings.count()
 
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"device_{instance.device.device_id}",
-        {
-            "type": "send_update",
-            "data": payload
-        }
-    )
+        active_test.collected_samples = sample_count
+        active_test.save()
+        print(f"📝 Collected {sample_count} /{active_test.required_samples}")
+        channel_layer = get_channel_layer()
 
+        # 🔵 Send Test Progress
+        async_to_sync(channel_layer.group_send)(
+            f"device_{instance.device.device_id}",
+            {
+                "type": "send_update",
+                "data": {
+                    "event": "test_progress",
+                    "collected": sample_count,
+                    "required": active_test.required_samples
+                }
+            }
+        )
+
+        print(f"📡 Sent progress update {sample_count}/{active_test.required_samples}")
+
+        if sample_count >= active_test.required_samples:
+            print(f"📝 Test {active_test.id} completed with {sample_count} samples")
+
+            recent_readings = readings[:active_test.required_samples]
+
+            avg_data = {
+                "nitrogen":0,
+                "phosphorus":0,
+                "potassium":0,
+                "temperature":0,
+                "humidity":0,
+            }
+
+            for reading in recent_readings:
+                avg_data["nitrogen"] += reading.nitrogen
+                avg_data["phosphorus"] += reading.phosphorus
+                avg_data["potassium"] += reading.potassium
+                avg_data["temperature"] += reading.temperature
+                avg_data["humidity"] += reading.humidity
+            
+            for key in avg_data:
+                avg_data[key] /= active_test.required_samples
+            
+            print(f"📝 Average data: {avg_data}")
+
+            soil_health = calculate_soil_health(avg_data)
+            print(f"📝 Soil health: {soil_health}")
+
+            active_test.result_score = soil_health["score"]
+            active_test.result_label = soil_health["label"]
+            active_test.completed = True
+            active_test.save()
+            print(f"📝 Test {active_test.id} completed with score {soil_health['score']}")
+
+            # 🟢 Send Test Completed
+            async_to_sync(channel_layer.group_send)(
+                f"device_{instance.device.device_id}",
+                {
+                    "type": "send_update",
+                    "data": {
+                        "event": "test_completed",
+                        "soil_health": soil_health,
+                        **avg_data
+                    }
+                }
+            )
+
+            print("📡 Sent test completion event")
+        
     return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
 
+    # # 🔹 Raw sensor values (used by dashboard + datapage)
+    # raw_data = {
+    #     "nitrogen": instance.nitrogen,
+    #     "phosphorus": instance.phosphorus,
+    #     "potassium": instance.potassium,
+    #     "temperature": instance.temperature,
+    #     "humidity": instance.humidity,
+    #     "timestamp": instance.timestamp.strftime("%H:%M:%S"),
+    # }
+
+    # 🔹 Derived analytics (used by dashboard only)
+    # soil_health = calculate_soil_health(raw_data)
+
+    # 🔹 Final WebSocket payload (RICH but SIMPLE)
+    # payload = {
+    #     "device_id": instance.device.device_id,
+    #     **raw_data,              # expands raw values at top level
+    #     "soil_health": soil_health,
+    # }
+
+    # channel_layer = get_channel_layer()
+    # async_to_sync(channel_layer.group_send)(
+    #     f"device_{instance.device.device_id}",
+    #     {
+    #         "type": "send_update",
+    #         "data": payload
+    #     }
+    # )
+
+    # return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
 
 @api_view(["POST"])
 @permission_classes([])  # allow any for now
@@ -229,3 +309,76 @@ def device_history_json(request, device_id):
     ]
 
     return JsonResponse({"history": response})
+
+@api_view(["POST"])
+@permission_classes([])
+def start_test(request, device_id):
+
+    device = get_object_or_404(Device, device_id=device_id)
+
+    # 🔴 CHECK IF TEST ALREADY RUNNING
+    active = SoilTestSession.objects.filter(
+        device=device,
+        completed=False
+    ).first()
+
+    if active:
+        if timezone.now() - active.start_time > timedelta(minutes=5):
+            active.completed = True
+            active.save()
+        else:
+            print("⚠️ Test already running")
+            return Response(
+                {
+                    "status": "already_running",
+                    "collected": active.collected_samples,
+                    "required": active.required_samples
+                },
+                status=200
+            )
+
+    # ✅ CREATE NEW TEST SESSION
+    test = SoilTestSession.objects.create(device=device)
+
+    print(f"✅ Test started for device {device.device_id}")
+
+    return Response({"status": "test_started"})
+
+@api_view(["GET"])
+@permission_classes([])
+def get_latest_test_result(request, device_id):
+
+    device = get_object_or_404(Device, device_id=device_id)
+
+    test = SoilTestSession.objects.filter(
+        device=device,
+        completed=True
+    ).order_by("-start_time").first()
+
+    if not test:
+        return Response({"error": "No completed test"}, status=404)
+
+    return Response({
+        "score": test.result_score,
+        "label": test.result_label,
+        "collected_samples": test.collected_samples
+    })
+
+@api_view(["POST"])
+@permission_classes([])
+def cancel_test(request, device_id):
+
+    device = get_object_or_404(Device, device_id=device_id)
+
+    active = SoilTestSession.objects.filter(
+        device=device,
+        completed=False
+    ).first()
+
+    if not active:
+        return Response({"status": "no_active_test"})
+
+    active.completed = True
+    active.save()
+
+    return Response({"status": "test_cancelled"})

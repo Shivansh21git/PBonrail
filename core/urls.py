@@ -15,5 +15,8 @@ urlpatterns = [
     path("api/push/batch/", views.push_batch, name="api-push-batch"),
     path('device/<str:device_id>/latest/', device_latest_json, name='device_latest_json'),
     path('device/<str:device_id>/history/', device_history_json, name='device_history_json'),
+    path('api/start-test/<str:device_id>/', views.start_test, name='start_test'),
+    path("api/test-result/<str:device_id>/", views.get_latest_test_result),
+    path("api/cancel-test/<str:device_id>/", views.cancel_test),
 
 ]

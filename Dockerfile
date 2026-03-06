@@ -25,10 +25,11 @@ COPY . .
 # Django settings will fail because DATABASE_URL is not present yet.
 # Instead: let Railway run collectstatic via Release Phase.
 RUN python manage.py collectstatic --noinput
+# Run python manage.py migrate
 
 EXPOSE 8000
 
-# Gunicorn command
+# daphne build  command
 CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "backend.asgi:application"]
 
 
