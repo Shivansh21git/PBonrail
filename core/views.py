@@ -288,15 +288,21 @@ def device_latest_json(request, device_id):
 
     return JsonResponse(latest_data)
 
-# @login_required
+
+
+@login_required 
 def device_history_json(request, device_id):
     device = get_object_or_404(Device, device_id=device_id, user=request.user)
+
+    # --------------------------
+    # Sensor history
+    # --------------------------
     data = (
         DeviceData.objects.filter(device=device)
         .order_by("-timestamp")[:10]
     )
 
-    response = [
+    sensor_history = [
         {
             "nitrogen": d.nitrogen,
             "phosphorus": d.phosphorus,
@@ -305,10 +311,33 @@ def device_history_json(request, device_id):
             "humidity": d.humidity,
             "timestamp": d.timestamp.strftime("%H:%M:%S"),
         }
-        for d in reversed(data) # show oldest → latest
+        for d in reversed(data)
     ]
 
-    return JsonResponse({"history": response})
+    # --------------------------
+    # Soil health history
+    # --------------------------
+    tests = (
+        SoilTestSession.objects.filter(
+            device=device,
+            completed=True,
+            result_score__isnull=False
+        )
+        .order_by("-start_time")[:10]
+    )
+
+    health_history = [
+        {
+            "health_score": t.result_score,
+            "timestamp": t.start_time.strftime("%H:%M:%S"),
+        }
+        for t in reversed(tests)
+    ]
+
+    return JsonResponse({
+        "history": sensor_history,
+        "health_history": health_history
+    })
 
 @api_view(["POST"])
 @permission_classes([])

@@ -39,6 +39,13 @@
   <!-- Humidity -->
   <div class="chart-container"><canvas id="HChart"></canvas></div>
 
+  <div class="chart-container">
+    <div class="Health-History">
+      <span>Soil Health Score: <strong id="H_Score">--</strong></span>
+    </div>
+    <canvas id="SHChart"></canvas>
+  </div>
+
 </div>
 
 <style>
@@ -120,18 +127,20 @@ let liveMode = false;
 
 const dataStore = {
   timestamps: [],
+  test_time: [],
   nitrogen: [],
   phosphorus: [],
   potassium: [],
   temperature: [],
-  humidity: []
+  humidity: [],
+  health_score: []
 };
 
 // ---------------------------
 // Chart Initialization
 // ---------------------------
 function chartType(key) {
-  return ['nitrogen', 'phosphorus', 'potassium'].includes(key)
+  return ['nitrogen', 'phosphorus', 'potassium','soilHealth'].includes(key)
     ? 'line'
     : 'doughnut';
 }
@@ -142,7 +151,8 @@ function getColor(key) {
     phosphorus: 'rgba(54, 162, 235, 1)',
     potassium: 'rgba(255, 206, 86, 1)',
     temperature: 'rgba(255, 159, 64, 1)',
-    humidity: 'rgba(75, 192, 192, 1)'
+    humidity: 'rgba(75, 192, 192, 1)',
+    soilHealth: 'rgb(207, 22, 148)'
   };
   return colors[key];
 }
@@ -153,7 +163,8 @@ function getUColor(key) {
     phosphorus: 'rgba(54, 162, 235, 0.2)',
     potassium: 'rgba(255, 206, 86, 0.2)',
     temperature: 'rgba(255, 159, 64, 0.2)',
-    humidity: 'rgba(75, 192, 192, 0.2)'
+    humidity: 'rgba(75, 192, 192, 0.2)',
+    soilHealth: 'rgba(207, 22, 148,0.2)'
   };
   return colors[key];
 }
@@ -164,7 +175,9 @@ function initCharts() {
     pChart: 'phosphorus',
     kChart: 'potassium',
     TChart: 'temperature',
-    HChart: 'humidity'
+    HChart: 'humidity',
+    SHChart: 'soilHealth'
+
   };
 
   for (const [canvasId, key] of Object.entries(chartMap)) {
@@ -174,10 +187,10 @@ function initCharts() {
       charts[key] = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: dataStore.timestamps,
+          labels: key === "soilHealth" ? dataStore.test_time : dataStore.timestamps,
           datasets: [{
             label: key.charAt(0).toUpperCase() + key.slice(1),
-            data: dataStore[key],
+            data: key === "soilHealth" ? dataStore.health_score : dataStore[key],
             borderColor: getColor(key),
             backgroundColor: getUColor(key),
             borderWidth: 2,
@@ -226,6 +239,7 @@ function loadHistory() {
     .then(res => res.json())
     .then(data => {
       const history = data.history;
+      const healthHistory = data.health_history || [];
 
       // Reset arrays
       for (let key in dataStore) dataStore[key] = [];
@@ -237,27 +251,48 @@ function loadHistory() {
         dataStore.phosphorus.push(entry.phosphorus);
         dataStore.potassium.push(entry.potassium);
         dataStore.temperature.push(entry.temperature);
-        dataStore.humidity.push(entry.humidity);
+        dataStore.humidity.push(entry.humidity)
+ //       dataStore.test_time.push(entry.test_timestamp);
+      
+      });
+      
+      healthHistory.forEach(entry => {
+        dataStore.test_time.push(entry.timestamp);
+        dataStore.health_score.push(entry.health_score);
       });
 
       const last = history[history.length - 1];
+      console.log(history);
 
       // Update Text
       document.getElementById("n_value").textContent = last.nitrogen;
       document.getElementById("p_value").textContent = last.phosphorus;
       document.getElementById("k_value").textContent = last.potassium;
+      if (healthHistory.length) {
+        const lastHealth = healthHistory[healthHistory.length - 1];
+        document.getElementById("H_Score").textContent = lastHealth.health_score;
+      }
 
       // Update charts
       for (let key in charts) {
-        if (charts[key].config.type === "line") {
+
+        if (key === "soilHealth") {
+          charts[key].data.labels = dataStore.test_time;
+          charts[key].data.datasets[0].data = dataStore.health_score;
+        }
+      
+        else if (charts[key].config.type === "line") {
           charts[key].data.labels = dataStore.timestamps;
           charts[key].data.datasets[0].data = dataStore[key];
-        } else {
+        }
+      
+        else {
           charts[key].data.datasets[0].data = [
             last[key],
             100 - last[key]
           ];
         }
+      
         charts[key].update();
       }
     });
