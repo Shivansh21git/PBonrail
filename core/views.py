@@ -309,7 +309,7 @@ def device_history_json(request, device_id):
             "potassium": d.potassium,
             "temperature": d.temperature,
             "humidity": d.humidity,
-            "timestamp": d.timestamp.strftime("%H:%M:%S"),
+            "timestamp": d.timestamp.strftime("%Y-%m-%dT%H:%M:%S"),
         }
         for d in reversed(data)
     ]
@@ -329,7 +329,7 @@ def device_history_json(request, device_id):
     health_history = [
         {
             "health_score": t.result_score,
-            "timestamp": t.start_time.strftime("%H:%M:%S"),
+            "timestamp": t.start_time.strftime("%Y-%m-%dT%H:%M:%S"),
         }
         for t in reversed(tests)
     ]
