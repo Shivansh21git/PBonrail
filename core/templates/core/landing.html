@@ -414,7 +414,7 @@
             <h4>Foreign Customer</h4>
             <span>Farmer • Tanzania</span>
           </div>
-        </div>
+        </div> 
         <p>
           Bhoomitra helped me understand my soil better. 
           Fertilizer usage reduced and crop yield improved significantly.
@@ -452,6 +452,90 @@
     </div>
   </div>
 </section>
+
+<section class="landing-section testimonials">
+  <div class="container">
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <span class="section-badge badge-brown">Reviews</span>
+
+      <h2 class="section-title">
+        Customer <span class="text-green">Feedback</span>
+      </h2>
+
+      <p class="section-subtext">
+        Real words from farmers and partners who shared their
+        Bhoomitra experience with us.
+      </p>
+    </div>
+
+    <div class="review-carousel" id="review-carousel">
+      <button type="button" class="review-nav review-nav-prev" aria-label="Previous review">&#10094;</button>
+
+      <div class="review-viewport">
+        <div class="review-track" id="review-track">
+          <div class="testimonial-card review-slide">
+            <img
+              src="{% static 'core/images/reviews/review1.png' %}"
+              alt="Customer review screenshot 1"
+              class="review-image"
+              onclick="openLightbox(this.src)"
+            >
+          </div>
+
+          <div class="testimonial-card review-slide">
+            <img
+              src="{% static 'core/images/reviews/review2.png' %}"
+              alt="Customer review screenshot 2"
+              class="review-image"
+              onclick="openLightbox(this.src)"
+            >
+          </div>
+
+          <div class="testimonial-card review-slide">
+            <img
+              src="{% static 'core/images/reviews/review3.png' %}"
+              alt="Customer review screenshot 3"
+              class="review-image"
+              onclick="openLightbox(this.src)"
+            >
+          </div>
+
+          <div class="testimonial-card review-slide">
+            <img
+              src="{% static 'core/images/reviews/review6.png' %}"
+              alt="Customer review screenshot 4"
+              class="review-image"
+              onclick="openLightbox(this.src)"
+            >
+          </div>
+
+          <div class="testimonial-card review-slide">
+            <img
+              src="{% static 'core/images/reviews/review4.png' %}"
+              alt="Customer review screenshot 5"
+              class="review-image"
+              onclick="openLightbox(this.src)"
+            >
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="review-nav review-nav-next" aria-label="Next review">&#10095;</button>
+    </div>
+
+    <div class="review-dots" id="review-dots" aria-label="Review slider controls">
+      <button type="button" class="review-dot is-active" aria-label="Go to review 1"></button>
+      <button type="button" class="review-dot" aria-label="Go to review 2"></button>
+      <button type="button" class="review-dot" aria-label="Go to review 3"></button>
+      <button type="button" class="review-dot" aria-label="Go to review 4"></button>
+      <button type="button" class="review-dot" aria-label="Go to review 5"></button>
+    </div>
+  </div>
+</section>
+
+
 
 <section id="contact" class="landing-section cta-section">
   <div class="container">
@@ -511,6 +595,59 @@
   function closeLightbox() {
     document.getElementById("lightbox").style.display = "none";
   }
+
+  (function initReviewCarousel() {
+    const track = document.getElementById("review-track");
+    const carousel = document.getElementById("review-carousel");
+    const dotsContainer = document.getElementById("review-dots");
+    if (!track || !carousel || !dotsContainer) return;
+
+    const slides = Array.from(track.querySelectorAll(".review-slide"));
+    const dots = Array.from(dotsContainer.querySelectorAll(".review-dot"));
+    const prevBtn = carousel.querySelector(".review-nav-prev");
+    const nextBtn = carousel.querySelector(".review-nav-next");
+
+    let currentIndex = 0;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function updateCarousel(index) {
+      currentIndex = (index + slides.length) % slides.length;
+      track.style.transform = "translateX(-" + currentIndex * 100 + "%)";
+      dots.forEach(function (dot, i) {
+        dot.classList.toggle("is-active", i === currentIndex);
+      });
+    }
+
+    prevBtn.addEventListener("click", function () {
+      updateCarousel(currentIndex - 1);
+    });
+
+    nextBtn.addEventListener("click", function () {
+      updateCarousel(currentIndex + 1);
+    });
+
+    dots.forEach(function (dot, i) {
+      dot.addEventListener("click", function () {
+        updateCarousel(i);
+      });
+    });
+
+    track.addEventListener("touchstart", function (e) {
+      touchStartX = e.changedTouches[0].clientX;
+    });
+
+    track.addEventListener("touchend", function (e) {
+      touchEndX = e.changedTouches[0].clientX;
+      const deltaX = touchEndX - touchStartX;
+      if (Math.abs(deltaX) < 40) return;
+      if (deltaX < 0) {
+        updateCarousel(currentIndex + 1);
+      } else {
+        updateCarousel(currentIndex - 1);
+      }
+    });
+  })();
 </script>
 
 {% endblock %}
