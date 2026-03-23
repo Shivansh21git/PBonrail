@@ -669,6 +669,91 @@ path#ZM{
   line-height: 1.5;
 }
 
+/* ================= REVIEW CAROUSEL ================= */
+.review {
+  background: #fffdf5;
+}
+.review-carousel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.review-track {
+  display: flex;
+  gap: 0;
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.review-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  background: #2f855a;
+}
+
+.review-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.review-nav {
+  border: none;
+  background: #f3f4f6;
+  color: #2f855a;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.review-nav:hover {
+  background: #fffdf5;
+}
+
+.review-dots {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.review-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  background: #cbd5e1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.review-dot.is-active {
+  width: 18px;
+  background: #2f855a;
+}
+
+/* Avoid inherited grid styles interfering with carousel cards */
+.testimonial-card.review-slide {
+  width: 100%;
+  margin: 0;
+}
+
+
 /* ================= CTA SECTION ================= */
 
 .cta-section {
@@ -1206,85 +1291,6 @@ label {
   }
 }
 
-/* ================= REVIEW CAROUSEL ================= */
-.review-carousel {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.review-viewport {
-  overflow: hidden;
-  width: 100%;
-}
-
-.review-track {
-  display: flex;
-  gap: 0;
-  transition: transform 0.35s ease;
-  will-change: transform;
-}
-
-.review-slide {
-  flex: 0 0 100%;
-  min-width: 100%;
-  max-width: 100%;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-.review-image {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.review-nav {
-  border: none;
-  background: #f3f4f6;
-  color: #2f855a;
-  width: 38px;
-  height: 38px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.review-nav:hover {
-  background: #e5e7eb;
-}
-
-.review-dots {
-  margin-top: 16px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-.review-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  border: none;
-  background: #cbd5e1;
-  cursor: pointer;
-  padding: 0;
-}
-
-.review-dot.is-active {
-  width: 18px;
-  background: #2f855a;
-}
-
-/* Avoid inherited grid styles interfering with carousel cards */
-.testimonial-card.review-slide {
-  width: 100%;
-  margin: 0;
-}
 
 @media (max-width: 768px) {
   .review-nav {
