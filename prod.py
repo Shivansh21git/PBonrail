@@ -8,7 +8,7 @@ API_URL = "https://ar.bhoomitra.space/api/push/"
 # API_URL = "http://localhost:8000/api/push/"      # CHANGE IF NEEDED
 
 DEVICE_ID = "TU-1"   # Change to your real device_id
-
+# DEVICE_ID = "SV01"  
 
 def generate_random_data():
     return {
