@@ -71,7 +71,7 @@
             <p><strong>Name:</strong> {{ active_device.name }}</p>
             <p><strong>Device ID:</strong> {{ active_device.device_id }}</p>
             <p><strong>Location:</strong> {{ active_device.location|default:"—" }}</p>
-            <p><strong>Status:</strong> <span class="device-online">OnliConnecting...</span></p>
+            <p><strong>Status:</strong> <span class="device-online">Connecting...</span></p>
           </div>
         {% else %}
             <p>No device added yet.</p>
@@ -180,7 +180,9 @@ if (showLink) {
 <script>
   const deviceId = "{{ active_device.device_id }}";
 
-let lastMessageTime = Date.now();
+let lastHeartbeatTime = 0;               // 0 = never received
+const HEARTBEAT_TIMEOUT_MS = 10000;    // offline after 10s
+
 const statusEl = document.querySelector(".device-online");
   // -----------------------------
 // 🧪 TEST MODE UI ELEMENTS
@@ -242,11 +244,10 @@ if (startTestBtn) {
     const payload = JSON.parse(event.data);
     if (!payload) return;
   
-    // 🔥 update last activity time
-    lastMessageTime = Date.now();
-  
+    
     // ❤️ heartbeat handling
     if (payload.event === "heartbeat") {
+      lastMessageTime = Date.now();   // 🔥 update last activity time
       return;
     }
   
@@ -328,14 +329,13 @@ function updateStatusCards(values, report) {
 setInterval(() => {
   const now = Date.now();
 
-  if (now - lastMessageTime > 10000) {
-    statusEl.textContent = "Offline";
-    statusEl.style.color = "red";
-  } else {
-    statusEl.textContent = "Online";
-    statusEl.style.color = "#2e7d32";
-  }
-}, 3000);
+  const online =
+    lastHeartbeatTime !== 0 &&
+    (now - lastHeartbeatTime) <= HEARTBEAT_TIMEOUT_MS;
+
+  statusEl.textContent = online ? "Online" : "Offline";
+  statusEl.style.color = online ? "#2e7d32" : "red";
+}, 3000); // optional: change to 1000 for faster UI update
 
 </script>
 {% endif %}
