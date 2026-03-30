@@ -71,7 +71,7 @@
             <p><strong>Name:</strong> {{ active_device.name }}</p>
             <p><strong>Device ID:</strong> {{ active_device.device_id }}</p>
             <p><strong>Location:</strong> {{ active_device.location|default:"—" }}</p>
-            <p><strong>Status:</strong> <span class="device-online">Online</span></p>
+            <p><strong>Status:</strong> <span class="device-online">OnliConnecting...</span></p>
           </div>
         {% else %}
             <p>No device added yet.</p>
@@ -80,7 +80,7 @@
         <!-- Actions -->
         <div class="device-actions">
               {% if active_device %}
-                <a href="{% url 'device_data_page' active_device.device_id %}" class="btn-outline small"> View Detailed Analytics → </a>
+                <a href="{% url 'device_data_page' active_device.device_id %}" class="btn-outline small"> View Previous Data → </a>
               {% endif %}
 
           <button id="toggleDeviceForm" class="btn-primary">+ Add New Device</button>
@@ -179,6 +179,9 @@ if (showLink) {
 {% if active_device %}
 <script>
   const deviceId = "{{ active_device.device_id }}";
+
+let lastMessageTime = Date.now();
+const statusEl = document.querySelector(".device-online");
   // -----------------------------
 // 🧪 TEST MODE UI ELEMENTS
 // -----------------------------
@@ -238,6 +241,14 @@ if (startTestBtn) {
   socket.onmessage = function (event) {
     const payload = JSON.parse(event.data);
     if (!payload) return;
+  
+    // 🔥 update last activity time
+    lastMessageTime = Date.now();
+  
+    // ❤️ heartbeat handling
+    if (payload.event === "heartbeat") {
+      return;
+    }
   
     // -----------------------------------
     // 🟢 NORMAL SOIL HEALTH UPDATE
@@ -312,6 +323,19 @@ function updateStatusCards(values, report) {
     }
   });
 }
+
+
+setInterval(() => {
+  const now = Date.now();
+
+  if (now - lastMessageTime > 10000) {
+    statusEl.textContent = "Offline";
+    statusEl.style.color = "red";
+  } else {
+    statusEl.textContent = "Online";
+    statusEl.style.color = "#2e7d32";
+  }
+}, 3000);
 
 </script>
 {% endif %}

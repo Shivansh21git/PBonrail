@@ -24,7 +24,7 @@ from asgiref.sync import async_to_sync
 
 load_dotenv()
 
-
+DEVICE_CONTROL = {}  # device_id → { sampling: True/False }
 
 def home_view(request):
     return render(request, 'core/landing.html')
@@ -51,6 +51,36 @@ def register_view(request):
          form = UserregistrationForm()
     return render(request, 'core/register.html',{'form':form})
 
+
+@api_view(["POST"])
+@permission_classes([])
+def device_sync(request):
+    device_id = request.data.get("device_id")
+
+    if not device_id:
+        return Response({"error": "device_id required"}, status=400)
+
+    # 📡 Send heartbeat to dashboard via WebSocket
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"device_{device_id}",   # ✅ FIXED GROUP NAME
+        {
+            "type": "send_update",
+            "data": {
+                "event": "heartbeat"
+            }
+        }
+    )
+
+    # 🧠 Check if test is active
+    active_test = SoilTestSession.objects.filter(
+        device__device_id=device_id,
+        completed=False
+    ).exists()
+
+    return Response({
+        "sampling": active_test   # ✅ DEVICE WILL FOLLOW THIS
+    })
 
 @login_required
 def dashboard_view(request):
@@ -123,90 +153,95 @@ def device_data_page(request, device_id):
 @api_view(["POST"])
 @permission_classes([])
 def push_single(request):
+
+    device_id = request.data.get("device_id")
+
+    # 🛑 BLOCK IF NO ACTIVE TEST
+    active_test = SoilTestSession.objects.filter(
+        device__device_id=device_id,
+        completed=False
+    ).first()
+
+    if not active_test:
+        return Response({"status": "ignored"}, status=200)
+
     serializer = DeviceDataSerializer(data=request.data)
+
     if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=400)
 
     instance = serializer.save()
 
-    active_test = SoilTestSession.objects.filter(device=instance.device, completed=False).first()
-    if active_test:
-        print(f"📝 Collecting sample {active_test.collected_samples + 1} for test {active_test.id}")
+    # 📊 Get all readings for current test
+    readings = DeviceData.objects.filter(
+        device=instance.device,
+        timestamp__gte=active_test.start_time
+    ).order_by("timestamp")
 
-        readings = DeviceData.objects.filter(device=instance.device, timestamp__gte=active_test.start_time).order_by("timestamp")
+    sample_count = readings.count()
 
-        sample_count = readings.count()
+    active_test.collected_samples = sample_count
+    active_test.save()
 
-        active_test.collected_samples = sample_count
+    channel_layer = get_channel_layer()
+
+    # 🔵 SEND TEST PROGRESS
+    async_to_sync(channel_layer.group_send)(
+        f"device_{instance.device.device_id}",
+        {
+            "type": "send_update",
+            "data": {
+                "event": "test_progress",
+                "collected": sample_count,
+                "required": active_test.required_samples
+            }
+        }
+    )
+
+    # 🟢 COMPLETE TEST
+    if sample_count >= active_test.required_samples:
+
+        recent_readings = readings[:active_test.required_samples]
+
+        avg_data = {
+            "nitrogen": 0,
+            "phosphorus": 0,
+            "potassium": 0,
+            "temperature": 0,
+            "humidity": 0,
+        }
+
+        for r in recent_readings:
+            avg_data["nitrogen"] += r.nitrogen
+            avg_data["phosphorus"] += r.phosphorus
+            avg_data["potassium"] += r.potassium
+            avg_data["temperature"] += r.temperature
+            avg_data["humidity"] += r.humidity
+
+        for key in avg_data:
+            avg_data[key] /= active_test.required_samples
+
+        soil_health = calculate_soil_health(avg_data)
+
+        active_test.result_score = soil_health["score"]
+        active_test.result_label = soil_health["label"]
+        active_test.completed = True
         active_test.save()
-        print(f"📝 Collected {sample_count} /{active_test.required_samples}")
-        channel_layer = get_channel_layer()
 
-        # 🔵 Send Test Progress
+        # 🟢 SEND FINAL RESULT
         async_to_sync(channel_layer.group_send)(
             f"device_{instance.device.device_id}",
             {
                 "type": "send_update",
                 "data": {
-                    "event": "test_progress",
-                    "collected": sample_count,
-                    "required": active_test.required_samples
+                    "event": "test_completed",
+                    "soil_health": soil_health,
+                    **avg_data
                 }
             }
         )
 
-        print(f"📡 Sent progress update {sample_count}/{active_test.required_samples}")
-
-        if sample_count >= active_test.required_samples:
-            print(f"📝 Test {active_test.id} completed with {sample_count} samples")
-
-            recent_readings = readings[:active_test.required_samples]
-
-            avg_data = {
-                "nitrogen":0,
-                "phosphorus":0,
-                "potassium":0,
-                "temperature":0,
-                "humidity":0,
-            }
-
-            for reading in recent_readings:
-                avg_data["nitrogen"] += reading.nitrogen
-                avg_data["phosphorus"] += reading.phosphorus
-                avg_data["potassium"] += reading.potassium
-                avg_data["temperature"] += reading.temperature
-                avg_data["humidity"] += reading.humidity
-            
-            for key in avg_data:
-                avg_data[key] /= active_test.required_samples
-            
-            print(f"📝 Average data: {avg_data}")
-
-            soil_health = calculate_soil_health(avg_data)
-            print(f"📝 Soil health: {soil_health}")
-
-            active_test.result_score = soil_health["score"]
-            active_test.result_label = soil_health["label"]
-            active_test.completed = True
-            active_test.save()
-            print(f"📝 Test {active_test.id} completed with score {soil_health['score']}")
-
-            # 🟢 Send Test Completed
-            async_to_sync(channel_layer.group_send)(
-                f"device_{instance.device.device_id}",
-                {
-                    "type": "send_update",
-                    "data": {
-                        "event": "test_completed",
-                        "soil_health": soil_health,
-                        **avg_data
-                    }
-                }
-            )
-
-            print("📡 Sent test completion event")
-        
-    return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
+    return Response({"status": "ok"}, status=201)
 
     # # 🔹 Raw sensor values (used by dashboard + datapage)
     # raw_data = {

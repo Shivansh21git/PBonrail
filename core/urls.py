@@ -18,5 +18,7 @@ urlpatterns = [
     path('api/start-test/<str:device_id>/', views.start_test, name='start_test'),
     path("api/test-result/<str:device_id>/", views.get_latest_test_result),
     path("api/cancel-test/<str:device_id>/", views.cancel_test),
+    path("api/device-sync/", views.device_sync, name="device-sync"),
+    
 
 ]
