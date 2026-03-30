@@ -247,7 +247,7 @@ if (startTestBtn) {
     
     // ❤️ heartbeat handling
     if (payload.event === "heartbeat") {
-      lastMessageTime = Date.now();   // 🔥 update last activity time
+      lastHeartbeatTime = Date.now(); // 🔥 update last heartbeat time
       return;
     }
   
