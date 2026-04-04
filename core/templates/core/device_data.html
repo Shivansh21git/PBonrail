@@ -5,7 +5,7 @@
 {% block content %}
 <h3>Sensor Data for {{ device_id }}</h3>
 
-<button id="liveToggle" class="btn-primary">LIVE: OFF</button>
+{% comment %} <button id="liveToggle" class="btn-primary">LIVE: OFF</button> {% endcomment %}
 
 <div class="chart-grid">
 
@@ -298,7 +298,7 @@ function loadHistory() {
     });
 }
 
-// ---------------------------
+{% comment %} // ---------------------------
 // LIVE WebSocket Mode
 // ---------------------------
 const socket = new WebSocket(
@@ -341,12 +341,12 @@ function updateLiveData(newData) {
       charts[key].update();
     }
   }
-}
+} {% endcomment %}
 
 // ---------------------------
 // LIVE Toggle Button
 // ---------------------------
-document.getElementById("liveToggle").onclick = () => {
+{% comment %} document.getElementById("liveToggle").onclick = () => {
   liveMode = !liveMode;
 
   const btn = document.getElementById("liveToggle");
@@ -354,7 +354,7 @@ document.getElementById("liveToggle").onclick = () => {
   btn.classList.toggle("live", liveMode);
 
   if (!liveMode) loadHistory();
-};
+}; {% endcomment %}
 
 initCharts();
 loadHistory();
